@@ -17,6 +17,7 @@ namespace DIInstall
         /// <param name="serviceCollection"></param>
         public static void InstallAppDependencies(this IServiceCollection serviceCollection)
         {
+            serviceCollection.AddTransient<IAuthService, AuthService>();
             serviceCollection.AddTransient<ICyclesRepository, CyclesRepository>();
             serviceCollection.AddTransient<ICyclesService, CyclesService>();
             serviceCollection.AddTransient<IArtworksRepository, ArtworksRepository>();

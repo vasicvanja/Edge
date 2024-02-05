@@ -8,11 +8,17 @@ namespace Edge.Mappers
     {
         public DomainToProfile() 
         {
-            //Artwork
+            // Login
+            CreateMap<Login, LoginDto>();
+
+            // Register
+            CreateMap<Register, RegisterDto>();
+
+            // Artwork
             CreateMap<Artwork, ArtworkDto>();
             CreateMap<ArtworkDto, Artwork>();
 
-            //Cycle
+            // Cycle
             CreateMap<Cycle, CycleDto>();
             CreateMap<CycleDto, Cycle>();
         }
