@@ -40,7 +40,7 @@ namespace Edge.Controllers
                 var result = await _authService.Register(register);
                 return Ok(new DataResponse<IdentityResult>
                 {
-                    Data = null,
+                    Data = result,
                     Succeeded = true,
                     ErrorMessage = ResponseMessages.SuccessfulUserCreation,
                     ResponseCode = EDataResponseCode.Success

@@ -92,9 +92,9 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters()
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecurityKey"] ?? string.Empty)),
-        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTSettings:SecurityKey"] ?? string.Empty)),
+        ValidIssuer = builder.Configuration["JWTSettings:ValidIssuer"],
+        ValidAudience = builder.Configuration["JWTSettings:ValidAudience"],
         ValidateIssuer = true,
         ValidateAudience = true,
         ClockSkew = TimeSpan.Zero
@@ -115,7 +115,7 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-app.UseCors("MyPolicy");
+app.UseCors("MyPolicy"); 
 
 app.UseAuthentication();
 

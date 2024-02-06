@@ -153,7 +153,7 @@ namespace Edge.Services
         /// <returns></returns>
         private string CreateToken(List<Claim> authClaims)
         {
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SecurityKey"]));
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWTSettings:SecurityKey"]));
             var credentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256Signature);
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -161,8 +161,8 @@ namespace Edge.Services
                 Subject = new ClaimsIdentity(authClaims),
                 Expires = DateTime.Now.AddHours(1),
                 SigningCredentials = credentials,
-                Issuer = _configuration["JWT:ValidIssuer"],
-                Audience = _configuration["JWT:ValidAudience"]
+                Issuer = _configuration["JWTSettings:ValidIssuer"],
+                Audience = _configuration["JWTSettings:ValidAudience"]
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
