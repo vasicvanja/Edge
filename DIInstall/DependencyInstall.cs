@@ -17,10 +17,11 @@ namespace DIInstall
         /// <param name="serviceCollection"></param>
         public static void InstallAppDependencies(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddTransient<ICyclesRepository, CyclesRepository>();
-            serviceCollection.AddTransient<ICyclesService, CyclesService>();
-            serviceCollection.AddTransient<IArtworksRepository, ArtworksRepository>();
-            serviceCollection.AddTransient<IArtworksService, ArtworksService>();
+            serviceCollection.AddTransient<IAuthService, AuthService>();
+            serviceCollection.AddScoped<ICyclesRepository, CyclesRepository>();
+            serviceCollection.AddScoped<ICyclesService, CyclesService>();
+            serviceCollection.AddScoped<IArtworksRepository, ArtworksRepository>();
+            serviceCollection.AddScoped<IArtworksService, ArtworksService>();
         }
     }
 }

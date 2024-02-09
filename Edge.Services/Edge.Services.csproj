@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Edge.Repositories.Interfaces\Edge.Repositories.Interfaces.csproj" />
     <ProjectReference Include="..\Edge.Services.Interfaces\Edge.Services.Interfaces.csproj" />
   </ItemGroup>

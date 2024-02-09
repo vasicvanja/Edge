@@ -1,9 +1,15 @@
 using DIInstall;
 using Edge.Data.EF;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -28,9 +34,9 @@ builder.Services.AddSwaggerGen(options =>
     });
     options.AddSecurityDefinition("Bearer Token", new OpenApiSecurityScheme
     {
-        Name = "Authorization",
-        Description = "Please enter a valid token",
         In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
         Type = SecuritySchemeType.Http,
         BearerFormat = "JWT",
         Scheme = "Bearer"
@@ -42,16 +48,16 @@ builder.Services.AddSwaggerGen(options =>
             {
                 Reference = new OpenApiReference
                 {
-                    Id = "Bearer",
-                    Type = ReferenceType.SecurityScheme
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer Token"
                 }
             },
-            new List<string>()
+            new string[]{ }
         }
     });
 });
 
-//Cors Policy
+// Cors Policy
 builder.Services.AddCors(option =>
 {
     option.AddPolicy("MyPolicy", corsPolicyBuilder =>
@@ -67,6 +73,35 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
     builder.Configuration.GetConnectionString("DefaultConnectionString")
 ));
 
+// Identity
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+// Add Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.IncludeErrorDetails = true;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTSettings:SecurityKey"] ?? string.Empty)),
+        ValidIssuer = builder.Configuration["JWTSettings:ValidIssuer"],
+        ValidAudience = builder.Configuration["JWTSettings:ValidAudience"],
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+//builder.Services.AddDbContext
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -80,7 +115,7 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-app.UseCors("MyPolicy");
+app.UseCors("MyPolicy"); 
 
 app.UseAuthentication();
 
