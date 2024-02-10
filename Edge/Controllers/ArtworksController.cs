@@ -152,7 +152,7 @@ namespace Edge.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete]
+        [HttpPost]
         [Route("delete")]
         public async Task<IActionResult> Delete(int id)
         {
