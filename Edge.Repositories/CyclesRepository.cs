@@ -47,7 +47,10 @@ namespace Edge.Repositories
 
             try
             {
-                var cycle = await _applicationDbContext.Cycles.FirstOrDefaultAsync(x => x.Id == Id);
+                var cycle = await _applicationDbContext
+                    .Cycles
+                    .Include(c => c.Artworks)
+                    .FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (cycle == null)
                 {
