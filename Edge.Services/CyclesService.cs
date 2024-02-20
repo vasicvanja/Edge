@@ -28,14 +28,12 @@ namespace Edge.Services
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public Task<DataResponse<CycleDto>> Get(int Id) => _cycleRepository.Get(Id);
 
         /// <summary>
         /// Get all Cycles.
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public Task<DataResponse<List<CycleDto>>> GetAll() => _cycleRepository.GetAll();
 
         /// <summary>
@@ -43,7 +41,6 @@ namespace Edge.Services
         /// </summary>
         /// <param name="cycleDto"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public Task<DataResponse<int>> Create(CycleDto cycleDto) => _cycleRepository.Create(cycleDto);
 
         /// <summary>
@@ -51,7 +48,6 @@ namespace Edge.Services
         /// </summary>
         /// <param name="cycleDto"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public Task<DataResponse<bool>> Update(CycleDto cycleDto) => _cycleRepository.Update(cycleDto);
 
         /// <summary>
@@ -59,7 +55,6 @@ namespace Edge.Services
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public Task<DataResponse<bool>> Delete(int Id) => _cycleRepository.Delete(Id);
 
         #endregion

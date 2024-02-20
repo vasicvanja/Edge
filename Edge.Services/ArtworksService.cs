@@ -32,14 +32,12 @@ namespace Edge.Services
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public Task<DataResponse<ArtworkDto>> Get(int Id) => _artworkRepository.Get(Id);
 
         /// <summary>
         /// Get all Artworks.
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public Task<DataResponse<List<ArtworkDto>>> GetAll() => _artworkRepository.GetAll();
 
         /// <summary>
@@ -47,7 +45,6 @@ namespace Edge.Services
         /// </summary>
         /// <param name="artworkDto"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public Task<DataResponse<int>> Create(ArtworkDto artworkDto) => _artworkRepository.Create(artworkDto);
 
         /// <summary>
@@ -55,7 +52,6 @@ namespace Edge.Services
         /// </summary>
         /// <param name="artworkDto"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public Task<DataResponse<bool>> Update(ArtworkDto artworkDto) => _artworkRepository.Update(artworkDto);
 
         /// <summary>
@@ -63,7 +59,6 @@ namespace Edge.Services
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public Task<DataResponse<bool>> Delete(int Id) => _artworkRepository.Delete(Id);
 
         #endregion

@@ -75,7 +75,6 @@ namespace Edge.Repositories
         /// Get all Artworks.
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<DataResponse<List<ArtworkDto>>> GetAll()
         {
             var result = new DataResponse<List<ArtworkDto>> { Data = new List<ArtworkDto>(), Succeeded = false };
@@ -119,7 +118,6 @@ namespace Edge.Repositories
         /// </summary>
         /// <param name="artworkDto"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<DataResponse<int>> Create(ArtworkDto artworkDto)
         {
             var result = new DataResponse<int>();
@@ -184,7 +182,6 @@ namespace Edge.Repositories
         /// </summary>
         /// <param name="artworkDto"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<DataResponse<bool>> Update(ArtworkDto artworkDto)
         {
             var result = new DataResponse<bool>() { Data = false, Succeeded = false };
@@ -245,7 +242,6 @@ namespace Edge.Repositories
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<DataResponse<bool>> Delete(int Id)
         {
             var result = new DataResponse<bool> { Data = false, Succeeded = false };
