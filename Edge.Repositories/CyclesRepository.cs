@@ -47,7 +47,10 @@ namespace Edge.Repositories
 
             try
             {
-                var cycle = await _applicationDbContext.Cycles.FirstOrDefaultAsync(x => x.Id == Id);
+                var cycle = await _applicationDbContext
+                    .Cycles
+                    .Include(c => c.Artworks)
+                    .FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (cycle == null)
                 {
@@ -75,7 +78,6 @@ namespace Edge.Repositories
         /// Get all Cycles.
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<DataResponse<List<CycleDto>>> GetAll()
         {
             var result = new DataResponse<List<CycleDto>> { Data = new List<CycleDto>(), Succeeded = false };
@@ -119,7 +121,6 @@ namespace Edge.Repositories
         /// </summary>
         /// <param name="cycleDto"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<DataResponse<int>> Create(CycleDto cycleDto)
         {
             var result = new DataResponse<int>();
@@ -179,7 +180,6 @@ namespace Edge.Repositories
         /// </summary>
         /// <param name="cycleDto"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<DataResponse<bool>> Update(CycleDto cycleDto)
         {
             var result = new DataResponse<bool>() { Data = false, Succeeded = false };
@@ -232,7 +232,6 @@ namespace Edge.Repositories
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<DataResponse<bool>> Delete(int Id)
         {
             var result = new DataResponse<bool> { Data = false, Succeeded = false };
