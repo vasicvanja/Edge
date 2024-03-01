@@ -12,7 +12,7 @@ namespace Edge.Data.EF
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            SeedRoles(modelBuilder);
+            //SeedRoles(modelBuilder);
         }
 
         public DbSet<Artwork> Artworks { get; set; }

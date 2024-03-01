@@ -10,6 +10,7 @@ namespace Edge.Dtos
         public string Technique { get; set; }
         public int Year { get; set; }
         public float Price { get; set; }
+        public int Quantity { get; set; }
         public EArtworkType Type { get; set; }
         public byte[] ImageData { get; set; }
         public int? CycleId { get; set; }
