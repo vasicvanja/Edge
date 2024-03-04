@@ -2,7 +2,6 @@
 using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Responses;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Edge.Controllers
@@ -19,6 +18,10 @@ namespace Edge.Controllers
 
         #region Ctor
 
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="artworkService"></param>
         public ArtworksController(IArtworksService artworkService)
         {
             _artworkService = artworkService;
