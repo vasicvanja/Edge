@@ -17,6 +17,7 @@ namespace Edge.Data.EF
 
         public DbSet<Artwork> Artworks { get; set; }
         public DbSet<Cycle> Cycles { get; set; }
+        public DbSet<SmtpSettings> SmtpSettings { get; set; }
 
         private void SeedRoles(ModelBuilder builder)
         {

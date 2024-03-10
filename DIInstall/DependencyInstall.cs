@@ -22,6 +22,8 @@ namespace DIInstall
             serviceCollection.AddScoped<ICyclesService, CyclesService>();
             serviceCollection.AddScoped<IArtworksRepository, ArtworksRepository>();
             serviceCollection.AddScoped<IArtworksService, ArtworksService>();
+            serviceCollection.AddScoped<ISmtpSettingsService, SmtpSettingsService>();
+            serviceCollection.AddScoped<ISmtpSettingsRepository, SmtpSettingsRepository>();
         }
     }
 }
