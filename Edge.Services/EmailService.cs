@@ -51,11 +51,13 @@ namespace Edge.Services
 
                 var smtpSettings = smtpSettingsResponse.Data;
 
-                if (smtpSettings.EnableSmtpSettings == false)
+                // Check if SMTP settings are enabled
+                if (!smtpSettings.EnableSmtpSettings)
                 {
-                    result.Succeeded = false;
-                    result.ErrorMessage = ResponseMessages.SmtpSettingsDisabled;
-
+                    // SMTP settings are disabled, return success without sending email
+                    result.Data = true;
+                    result.Succeeded = true;
+                    result.ResponseCode = EDataResponseCode.Success;
                     return result;
                 }
 
