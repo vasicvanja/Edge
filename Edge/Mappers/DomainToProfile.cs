@@ -21,6 +21,14 @@ namespace Edge.Mappers
             // Cycle
             CreateMap<Cycle, CycleDto>();
             CreateMap<CycleDto, Cycle>();
+
+            // SmtpSettings
+            CreateMap<SmtpSettings, SmtpSettingsDto>();
+            CreateMap<SmtpSettingsDto, SmtpSettings>();
+
+            // Message
+            CreateMap<EmailMessage, EmailMessageDto>();
+            CreateMap<EmailMessageDto, EmailMessage>();
         }
     }
 }
