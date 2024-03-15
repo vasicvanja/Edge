@@ -21,6 +21,7 @@ namespace Edge.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
 
         #endregion
 
@@ -29,12 +30,13 @@ namespace Edge.Services
         public AuthService(UserManager<IdentityUser> userManager, 
             RoleManager<IdentityRole> roleManager, 
             SignInManager<IdentityUser> signInManager,
-            IConfiguration configuration)
+            IConfiguration configuration, IEmailService emailService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         #endregion
@@ -79,6 +81,15 @@ namespace Edge.Services
             {
                 throw new InvalidOperationException(ResponseMessages.NonExistingRole);
             }
+
+            var emailMessage = new EmailMessageDto
+            {
+                Email = registerDto.Email,
+                Subject = "Welcome to Edge",
+                Message = "Thank you for registering with us!"
+            };
+
+            await _emailService.SendEmail(emailMessage);
 
             return createResult;
         }

@@ -25,6 +25,10 @@ namespace Edge.Mappers
             // SmtpSettings
             CreateMap<SmtpSettings, SmtpSettingsDto>();
             CreateMap<SmtpSettingsDto, SmtpSettings>();
+
+            // Message
+            CreateMap<EmailMessage, EmailMessageDto>();
+            CreateMap<EmailMessageDto, EmailMessage>();
         }
     }
 }

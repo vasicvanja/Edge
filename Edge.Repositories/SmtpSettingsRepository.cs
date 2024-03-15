@@ -99,14 +99,12 @@ namespace Edge.Repositories
 
                 if (existSmtpSettings == null)
                 {
-                    // Create a new SmtpSettings object (first time when there are no smtp settings in the database)
                     var newSmtpSettings = new SmtpSettings();
                     _mapper.Map(smtpSettingsDto, newSmtpSettings);
                     _applicationDbContext.SmtpSettings.Add(newSmtpSettings);
                 }
                 else
                 {
-                    // Update existing SmtpSettings
                     _mapper.Map(smtpSettingsDto, existSmtpSettings);
                 }
 
@@ -124,7 +122,7 @@ namespace Edge.Repositories
                 result.ErrorMessage = string.Format(ResponseMessages.UnsuccessfulUpdateOfEntity, nameof(SmtpSettings));
 
                 return result;
-            }
+            }   
         }
 
         #endregion
