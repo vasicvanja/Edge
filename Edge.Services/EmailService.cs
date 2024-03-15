@@ -51,6 +51,14 @@ namespace Edge.Services
 
                 var smtpSettings = smtpSettingsResponse.Data;
 
+                if (smtpSettings.EnableSmtpSettings == false)
+                {
+                    result.Succeeded = false;
+                    result.ErrorMessage = ResponseMessages.SmtpSettingsDisabled;
+
+                    return result;
+                }
+
                 using (var smtpClient = new SmtpClient(smtpSettings.Host, smtpSettings.Port))
                 {
                     smtpClient.UseDefaultCredentials = false;

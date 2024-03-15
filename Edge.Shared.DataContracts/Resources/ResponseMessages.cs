@@ -29,5 +29,6 @@ namespace Edge.Shared.DataContracts.Resources
         public const string SuccessfullyRetrievedEntities = "Successfully retrieved entities!";
         public const string InvalidRegisterPassword = "Your registration was unsuccessful, please make sure that your password contains one capital letter, one number and one symbol!";
         public const string UnsuccessfulEmailSend = "Sending Mail failed!";
+        public const string SmtpSettingsDisabled = "SMTP Settings are currently disabled. Mails cannot be sent!";
     }
 }
