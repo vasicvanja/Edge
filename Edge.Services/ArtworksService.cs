@@ -8,6 +8,7 @@ namespace Edge.Services
     public class ArtworksService : IArtworksService
     {
         #region Declarations
+
         private readonly IArtworksRepository _artworkRepository;
 
         #endregion
