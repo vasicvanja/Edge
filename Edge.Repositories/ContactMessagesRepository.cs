@@ -121,8 +121,9 @@ namespace Edge.Repositories
             try
             {
                 var contactMessages = await _applicationDbContext.ContactMessages
-                    .Where(x => x.Email == email)
-                    .ToListAsync();
+                   .Where(x => x.Email.StartsWith(email) || x.Email.Contains(email))
+                   .ToListAsync();
+
 
                 if (contactMessages == null || contactMessages.Count == 0)
                 {
