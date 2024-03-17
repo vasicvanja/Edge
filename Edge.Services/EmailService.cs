@@ -14,14 +14,16 @@ namespace Edge.Services
         #region Declarations
 
         private readonly ISmtpSettingsRepository _smtpSettingsRepository;
+        private readonly IPasswordEncryptionService _passwordEncryptionService;
 
         #endregion
 
         #region Ctor
 
-        public EmailService(ISmtpSettingsRepository smtpSettingsRepository)
+        public EmailService(ISmtpSettingsRepository smtpSettingsRepository, IPasswordEncryptionService passwordEncryptionService)
         {
             _smtpSettingsRepository = smtpSettingsRepository;
+            _passwordEncryptionService = passwordEncryptionService;
         }
 
         #endregion
@@ -64,7 +66,7 @@ namespace Edge.Services
                 using (var smtpClient = new SmtpClient(smtpSettings.Host, smtpSettings.Port))
                 {
                     smtpClient.UseDefaultCredentials = false;
-                    smtpClient.Credentials = new NetworkCredential(smtpSettings.Username, smtpSettings.Password);
+                    smtpClient.Credentials = new NetworkCredential(smtpSettings.Username, _passwordEncryptionService.DecryptPassword(smtpSettings.Password));
                     smtpClient.EnableSsl = smtpSettings.EnableSsl;
 
                     using (var mailMessage = new MailMessage())

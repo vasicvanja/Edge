@@ -35,6 +35,9 @@ namespace DIInstall
             serviceCollection.AddScoped<IEmailService, EmailService>();
             serviceCollection.AddScoped<IContactMessagesRepository, ContactMessagesRepository>();
             serviceCollection.AddScoped<IContactMessagesService, ContactMessagesService>();
+
+            // Password Encryption
+            serviceCollection.AddScoped<IPasswordEncryptionService, PasswordEncryptionService>();
         }
     }
 }

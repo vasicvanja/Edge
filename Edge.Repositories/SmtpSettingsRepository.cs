@@ -3,6 +3,7 @@ using Edge.Data.EF;
 using Edge.DomainModels;
 using Edge.Dtos;
 using Edge.Repositories.Interfaces;
+using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
 using Edge.Shared.DataContracts.Responses;
@@ -16,6 +17,7 @@ namespace Edge.Repositories
 
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly IMapper _mapper;
+        private readonly IPasswordEncryptionService _passwordEncryptionService;
 
         #endregion
 
@@ -24,10 +26,11 @@ namespace Edge.Repositories
         /// Ctor.
         /// </summary>
         /// <param name="applicationDbContext"></param>
-        public SmtpSettingsRepository(ApplicationDbContext applicationDbContext, IMapper mapper)
+        public SmtpSettingsRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IPasswordEncryptionService passwordEncryptionService)
         {
             _applicationDbContext = applicationDbContext;
             _mapper = mapper;
+            _passwordEncryptionService = passwordEncryptionService;
         }
 
         #endregion
@@ -101,11 +104,13 @@ namespace Edge.Repositories
                 {
                     var newSmtpSettings = new SmtpSettings();
                     _mapper.Map(smtpSettingsDto, newSmtpSettings);
+                    newSmtpSettings.Password = _passwordEncryptionService.EncryptPassword(smtpSettingsDto.Password);
                     _applicationDbContext.SmtpSettings.Add(newSmtpSettings);
                 }
                 else
                 {
                     _mapper.Map(smtpSettingsDto, existSmtpSettings);
+                    existSmtpSettings.Password = _passwordEncryptionService.EncryptPassword(smtpSettingsDto.Password);
                 }
 
                 await _applicationDbContext.SaveChangesAsync();
