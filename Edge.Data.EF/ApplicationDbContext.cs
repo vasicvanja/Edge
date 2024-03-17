@@ -12,6 +12,13 @@ namespace Edge.Data.EF
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Cycle>()
+                .HasMany(c => c.Artworks)
+                .WithOne(a => a.Cycle)
+                .HasForeignKey(a => a.CycleId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             //SeedRoles(modelBuilder);
         }
 
