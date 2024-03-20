@@ -35,7 +35,6 @@ namespace Edge.Services
         /// </summary>
         /// <param name="emailMessage"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<DataResponse<bool>> SendEmail(EmailMessageDto emailMessage)
         {
             var result = new DataResponse<bool> { Data = false, Succeeded = false };
