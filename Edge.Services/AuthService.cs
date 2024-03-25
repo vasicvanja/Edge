@@ -1,7 +1,9 @@
 ﻿using Edge.Dtos;
 using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Constants;
+using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
+using Edge.Shared.DataContracts.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -27,6 +29,14 @@ namespace Edge.Services
 
         #region Ctor
 
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="userManager"></param>
+        /// <param name="roleManager"></param>
+        /// <param name="signInManager"></param>
+        /// <param name="configuration"></param>
+        /// <param name="emailService"></param>
         public AuthService(UserManager<IdentityUser> userManager, 
             RoleManager<IdentityRole> roleManager, 
             SignInManager<IdentityUser> signInManager,
@@ -86,7 +96,8 @@ namespace Edge.Services
             {
                 Email = registerDto.Email,
                 Subject = "Welcome to Edge",
-                Message = "Thank you for registering with us!"
+                Message = "Thank you for registering with us!",
+                IsBodyHtml = false
             };
 
             await _emailService.SendEmail(emailMessage);
@@ -118,24 +129,18 @@ namespace Edge.Services
                 var userRoles = await _userManager.GetRolesAsync(user);
                 var authClaims = new List<Claim>
                 {
-                    new Claim (ClaimTypes.Name, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    new(ClaimTypes.Name, user.UserName),
+                    new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
 
-                foreach (var userRole in userRoles)
-                {
-                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-                }
+                authClaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
 
                 var signInResult = await _signInManager.PasswordSignInAsync(user, loginDto.Password, false, false);
                 var generatedToken = string.Empty;
 
-                if (signInResult.Succeeded)
-                {
-                    generatedToken = CreateToken(authClaims);
-                    return generatedToken;
-                }
+                if (!signInResult.Succeeded) return generatedToken;
 
+                generatedToken = CreateToken(authClaims);
                 return generatedToken;
             }
             else
@@ -152,6 +157,90 @@ namespace Edge.Services
         {
             await _signInManager.SignOutAsync();
         }
+
+        /// <summary>
+        /// Sends an email with link to reset password.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="resetLink"></param>
+        /// <returns></returns>
+        public async Task<DataResponse<bool>> SendForgotPasswordEmail(string email, string resetLink)
+        {
+            try
+            {
+                var emailMessage = new EmailMessageDto
+                {
+                    Email = email,
+                    Subject = "Password Reset Request",
+                    Message = $"Please reset your password by <a href='{resetLink}'> clicking here</a>",
+                    IsBodyHtml = true
+                };
+
+                var result = await _emailService.SendEmail(emailMessage);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<bool>
+                {
+                    Data = false,
+                    ResponseCode = EDataResponseCode.GenericError,
+                    ErrorMessage = ex.Message,
+                    Succeeded = false
+                };
+            }
+        }
+
+        /// <summary>
+        /// Sets the new password.
+        /// </summary>
+        /// <param name="resetPassword"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<DataResponse<bool>> ResetPassword(ResetPasswordDto resetPassword)
+        {
+            var result = new DataResponse<bool> { Data = false, Succeeded = false };
+
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(resetPassword.Email);
+                if (user == null)
+                {
+                    result.Succeeded = false;
+                    result.ErrorMessage = ResponseMessages.UserDoesNotExist;
+                    result.ResponseCode = EDataResponseCode.GenericError;
+
+                    return result;
+                }
+
+                var passwordReset = await _userManager.ResetPasswordAsync(user, resetPassword.Token, resetPassword.NewPassword);
+
+                if (!passwordReset.Succeeded)
+                {
+                    result.Succeeded = passwordReset.Succeeded;
+                    result.ErrorMessage = ResponseMessages.InvalidToken;
+                    result.ResponseCode = EDataResponseCode.InvalidToken;
+
+                    return result;
+                }
+
+                result.ResponseCode = EDataResponseCode.Success;
+                result.Succeeded = true;
+                result.Data = passwordReset.Succeeded;
+
+                return result;
+            }
+            catch (Exception)
+            {
+                result.Succeeded = false;
+                result.ResponseCode = EDataResponseCode.GenericError;
+                result.ErrorMessage = ResponseMessages.UnsuccessfulPasswordReset;
+
+                return result;
+            }
+        }
+
 
         #endregion
 
@@ -182,7 +271,7 @@ namespace Edge.Services
         }
 
         /// <summary>
-        /// Cheeck if user already exists for the provided username and email.
+        /// Check if user already exists for the provided username and email.
         /// </summary>
         /// <param name="username"></param>
         /// <param name="email"></param>

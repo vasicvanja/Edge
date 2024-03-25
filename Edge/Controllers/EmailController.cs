@@ -17,7 +17,7 @@ namespace Edge.Controllers
         #endregion
 
         #region Ctor
-        
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -44,7 +44,7 @@ namespace Edge.Controllers
             {
                 var errRet = new DataResponse<bool>
                 {
-                    ResponseCode = EDataResponseCode.Success,
+                    ResponseCode = EDataResponseCode.GenericError,
                     Succeeded = false,
                     ErrorMessage = ex.Message
                 };

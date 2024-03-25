@@ -4,6 +4,7 @@ using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
 using Edge.Shared.DataContracts.Responses;
+using Microsoft.AspNetCore.Identity;
 using System.Net;
 using System.Net.Mail;
 
@@ -15,15 +16,26 @@ namespace Edge.Services
 
         private readonly ISmtpSettingsRepository _smtpSettingsRepository;
         private readonly IPasswordEncryptionService _passwordEncryptionService;
+        private readonly UserManager<IdentityUser> _userManager;
 
         #endregion
 
         #region Ctor
 
-        public EmailService(ISmtpSettingsRepository smtpSettingsRepository, IPasswordEncryptionService passwordEncryptionService)
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="smtpSettingsRepository"></param>
+        /// <param name="passwordEncryptionService"></param>
+        /// <param name="userManager"></param>
+        public EmailService(
+            ISmtpSettingsRepository smtpSettingsRepository, 
+            IPasswordEncryptionService passwordEncryptionService, 
+            UserManager<IdentityUser> userManager)
         {
             _smtpSettingsRepository = smtpSettingsRepository;
             _passwordEncryptionService = passwordEncryptionService;
+            _userManager = userManager;
         }
 
         #endregion
@@ -52,6 +64,7 @@ namespace Edge.Services
 
                 var smtpSettings = smtpSettingsResponse.Data;
 
+                // On Register
                 // Check if SMTP settings are enabled
                 if (!smtpSettings.EnableSmtpSettings)
                 {
@@ -74,6 +87,7 @@ namespace Edge.Services
                         mailMessage.To.Add(new MailAddress(emailMessage.Email));
                         mailMessage.Subject = emailMessage.Subject;
                         mailMessage.Body = emailMessage.Message;
+                        mailMessage.IsBodyHtml = emailMessage.IsBodyHtml;
 
                         smtpClient.Send(mailMessage);
                     }
