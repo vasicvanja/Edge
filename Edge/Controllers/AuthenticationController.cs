@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Security.Authentication;
 using System.Text.Json;
+using System.Web;
 
 namespace Edge.Controllers
 {
@@ -15,12 +16,30 @@ namespace Edge.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        public IAuthService _authService;
+        #region Declarations
 
-        public AuthenticationController(IAuthService authService)
+        private readonly IAuthService _authService;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IConfiguration _configuration;
+
+        #endregion
+
+        #region Ctor
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="authService"></param>
+        public AuthenticationController(IAuthService authService, UserManager<IdentityUser> userManager, IConfiguration configuration)
         {
             _authService = authService;
+            _userManager = userManager;
+            _configuration = configuration;
         }
+
+        #endregion
+
+        #region Register
 
         /// <summary>
         /// Register new user.
@@ -68,6 +87,10 @@ namespace Edge.Controllers
             }
         }
 
+        #endregion
+
+        #region Login
+
         /// <summary>
         /// Sign in existing user.
         /// </summary>
@@ -109,6 +132,14 @@ namespace Edge.Controllers
             }
         }
 
+        #endregion
+
+        #region Logout
+
+        /// <summary>
+        /// Logout user.
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("Logout")]
         public async Task<IActionResult> Logout()
         {
@@ -128,5 +159,65 @@ namespace Edge.Controllers
                 return BadRequest(errRet);
             }
         }
+
+        #endregion
+
+        #region Change Password
+
+        /// <summary>
+        /// Sends an email with the link for resetting a password.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("forgotPassword")]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            try
+            {
+                var result = await _authService.SendForgotPasswordEmail(email);
+
+                return Ok(Conversion<bool>.ReturnResponse(result));
+
+            }
+            catch (Exception ex)
+            {
+                var errRet = new DataResponse<bool>
+                {
+                    ResponseCode = EDataResponseCode.GenericError,
+                    Succeeded = false,
+                    ErrorMessage = ex.Message
+                };
+                return BadRequest(Conversion<bool>.ReturnResponse(errRet));
+            }
+        }
+
+        /// <summary>
+        /// Sets the new password.
+        /// </summary>
+        /// <param name="resetPassword"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("resetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPassword)
+        {
+            try
+            {
+                var result = await _authService.ResetPassword(resetPassword);
+                return Ok(Conversion<bool>.ReturnResponse(result));
+            }
+            catch (Exception ex)
+            {
+                var errRet = new DataResponse<bool>
+                {
+                    ResponseCode = EDataResponseCode.GenericError,
+                    Succeeded = false,
+                    ErrorMessage = ex.Message
+                };
+                return BadRequest(Conversion<bool>.ReturnResponse(errRet));
+            }
+        }
+
+        #endregion
     }
 }

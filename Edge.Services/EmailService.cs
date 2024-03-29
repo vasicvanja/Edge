@@ -1,5 +1,4 @@
 ﻿using Edge.Dtos;
-using Edge.Repositories.Interfaces;
 using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
@@ -13,16 +12,21 @@ namespace Edge.Services
     {
         #region Declarations
 
-        private readonly ISmtpSettingsRepository _smtpSettingsRepository;
+        private readonly ISmtpSettingsService _smtpSettingsService;
         private readonly IPasswordEncryptionService _passwordEncryptionService;
 
         #endregion
 
         #region Ctor
 
-        public EmailService(ISmtpSettingsRepository smtpSettingsRepository, IPasswordEncryptionService passwordEncryptionService)
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="smtpSettingsService"></param>
+        /// <param name="passwordEncryptionService"></param>
+        public EmailService(ISmtpSettingsService smtpSettingsService, IPasswordEncryptionService passwordEncryptionService)
         {
-            _smtpSettingsRepository = smtpSettingsRepository;
+            _smtpSettingsService = smtpSettingsService;
             _passwordEncryptionService = passwordEncryptionService;
         }
 
@@ -41,7 +45,7 @@ namespace Edge.Services
 
             try
             {
-                var smtpSettingsResponse = await _smtpSettingsRepository.GetSmtpSettings();
+                var smtpSettingsResponse = await _smtpSettingsService.GetSmtpSettings();
 
                 if (!smtpSettingsResponse.Succeeded || smtpSettingsResponse.Data == null)
                 {
@@ -51,16 +55,6 @@ namespace Edge.Services
                 }
 
                 var smtpSettings = smtpSettingsResponse.Data;
-
-                // Check if SMTP settings are enabled
-                if (!smtpSettings.EnableSmtpSettings)
-                {
-                    // SMTP settings are disabled, return success without sending email
-                    result.Data = true;
-                    result.Succeeded = true;
-                    result.ResponseCode = EDataResponseCode.Success;
-                    return result;
-                }
 
                 using (var smtpClient = new SmtpClient(smtpSettings.Host, smtpSettings.Port))
                 {
@@ -74,6 +68,7 @@ namespace Edge.Services
                         mailMessage.To.Add(new MailAddress(emailMessage.Email));
                         mailMessage.Subject = emailMessage.Subject;
                         mailMessage.Body = emailMessage.Message;
+                        mailMessage.IsBodyHtml = emailMessage.IsBodyHtml;
 
                         smtpClient.Send(mailMessage);
                     }

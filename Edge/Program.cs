@@ -19,7 +19,7 @@ builder.Services.AddControllers()
 
 builder.Services.AddAutoMapper(typeof(Program));
 
-DependencyInstall.InstallAppDependencies(builder.Services);
+builder.Services.InstallAppDependencies();
 
 builder.Services.AddControllers();
 
