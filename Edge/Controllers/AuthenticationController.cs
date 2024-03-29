@@ -175,37 +175,7 @@ namespace Edge.Controllers
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(email);
-                if (user == null)
-                {
-                    var errRet = new DataResponse<bool>
-                    {
-                        ResponseCode = EDataResponseCode.InvalidInputParameter,
-                        Succeeded = false,
-                        ErrorMessage = ResponseMessages.UserDoesNotExist
-                    };
-                    return BadRequest(Conversion<bool>.ReturnResponse(errRet));
-                }
-
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                token = HttpUtility.UrlEncode(token);
-
-                var clientUrl = _configuration["ClientApp:Url"];
-
-                var resetLink = $"{clientUrl}/reset-password?token={token}&email={email}";
-
-                if (string.IsNullOrEmpty(resetLink))
-                {
-                    var errRet = new DataResponse<bool>
-                    {
-                        ResponseCode = EDataResponseCode.InvalidToken,
-                        Succeeded = false,
-                        ErrorMessage = ResponseMessages.UnsuccessfulCreationOfPasswordResetToken
-                    };
-                    return BadRequest(Conversion<bool>.ReturnResponse(errRet));
-                }
-
-                var result = await _authService.SendForgotPasswordEmail(email, resetLink);
+                var result = await _authService.SendForgotPasswordEmail(email);
 
                 return Ok(Conversion<bool>.ReturnResponse(result));
 

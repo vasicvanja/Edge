@@ -10,7 +10,7 @@ namespace Edge.Services.Interfaces
         Task<IdentityResult> Register(RegisterDto registerDto);
         Task<string> Login(LoginDto loginDto);
         Task Logout();
-        Task<DataResponse<bool>> SendForgotPasswordEmail(string email, string resetLink);
+        Task<DataResponse<bool>> SendForgotPasswordEmail(string email);
         Task<DataResponse<bool>> ResetPassword(ResetPasswordDto resetPassword);
     }
 }

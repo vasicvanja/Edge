@@ -12,6 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
+using System.Web;
 
 namespace Edge.Services
 {
@@ -40,10 +41,10 @@ namespace Edge.Services
         /// <param name="emailService"></param>
         /// <param name="smtpSettingsService"></param>
         public AuthService(
-            UserManager<IdentityUser> userManager, 
-            RoleManager<IdentityRole> roleManager, 
+            UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager,
             SignInManager<IdentityUser> signInManager,
-            IConfiguration configuration, 
+            IConfiguration configuration,
             IEmailService emailService,
             ISmtpSettingsService smtpSettingsService)
         {
@@ -166,9 +167,8 @@ namespace Edge.Services
         /// Sends an email with link to reset password.
         /// </summary>
         /// <param name="email"></param>
-        /// <param name="resetLink"></param>
         /// <returns></returns>
-        public async Task<DataResponse<bool>> SendForgotPasswordEmail(string email, string resetLink)
+        public async Task<DataResponse<bool>> SendForgotPasswordEmail(string email)
         {
             try
             {
@@ -193,6 +193,35 @@ namespace Edge.Services
                         ResponseCode = EDataResponseCode.GenericError,
                         ErrorMessage = ResponseMessages.SmtpSettingsDisabled,
                         Succeeded = false
+                    };
+                }
+
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    return new DataResponse<bool>
+                    {
+                        Data = false,
+                        ResponseCode = EDataResponseCode.InvalidInputParameter,
+                        Succeeded = false,
+                        ErrorMessage = ResponseMessages.UserDoesNotExist
+                    };
+                }
+
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                token = HttpUtility.UrlEncode(token);
+
+                var clientUrl = _configuration["ClientApp:Url"];
+
+                var resetLink = $"{clientUrl}/reset-password?token={token}&email={email}";
+
+                if (string.IsNullOrEmpty(resetLink))
+                {
+                    return new DataResponse<bool>
+                    {
+                        ResponseCode = EDataResponseCode.InvalidToken,
+                        Succeeded = false,
+                        ErrorMessage = ResponseMessages.UnsuccessfulCreationOfPasswordResetToken
                     };
                 }
 
