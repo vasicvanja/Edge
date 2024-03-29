@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Security.Authentication;
 using System.Text.Json;
+using System.Web;
 
 namespace Edge.Controllers
 {
@@ -187,6 +188,7 @@ namespace Edge.Controllers
                 }
 
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                token = HttpUtility.UrlEncode(token);
 
                 var clientUrl = _configuration["ClientApp:Url"];
 

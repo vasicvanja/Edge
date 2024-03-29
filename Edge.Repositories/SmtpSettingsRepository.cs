@@ -26,6 +26,8 @@ namespace Edge.Repositories
         /// Ctor.
         /// </summary>
         /// <param name="applicationDbContext"></param>
+        /// <param name="mapper"></param>
+        /// <param name="passwordEncryptionService"></param>
         public SmtpSettingsRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IPasswordEncryptionService passwordEncryptionService)
         {
             _applicationDbContext = applicationDbContext;

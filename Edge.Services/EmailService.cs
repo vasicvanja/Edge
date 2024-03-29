@@ -1,10 +1,8 @@
 ﻿using Edge.Dtos;
-using Edge.Repositories.Interfaces;
 using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
 using Edge.Shared.DataContracts.Responses;
-using Microsoft.AspNetCore.Identity;
 using System.Net;
 using System.Net.Mail;
 
@@ -14,9 +12,8 @@ namespace Edge.Services
     {
         #region Declarations
 
-        private readonly ISmtpSettingsRepository _smtpSettingsRepository;
+        private readonly ISmtpSettingsService _smtpSettingsService;
         private readonly IPasswordEncryptionService _passwordEncryptionService;
-        private readonly UserManager<IdentityUser> _userManager;
 
         #endregion
 
@@ -25,17 +22,12 @@ namespace Edge.Services
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="smtpSettingsRepository"></param>
+        /// <param name="smtpSettingsService"></param>
         /// <param name="passwordEncryptionService"></param>
-        /// <param name="userManager"></param>
-        public EmailService(
-            ISmtpSettingsRepository smtpSettingsRepository, 
-            IPasswordEncryptionService passwordEncryptionService, 
-            UserManager<IdentityUser> userManager)
+        public EmailService(ISmtpSettingsService smtpSettingsService, IPasswordEncryptionService passwordEncryptionService)
         {
-            _smtpSettingsRepository = smtpSettingsRepository;
+            _smtpSettingsService = smtpSettingsService;
             _passwordEncryptionService = passwordEncryptionService;
-            _userManager = userManager;
         }
 
         #endregion
@@ -53,7 +45,7 @@ namespace Edge.Services
 
             try
             {
-                var smtpSettingsResponse = await _smtpSettingsRepository.GetSmtpSettings();
+                var smtpSettingsResponse = await _smtpSettingsService.GetSmtpSettings();
 
                 if (!smtpSettingsResponse.Succeeded || smtpSettingsResponse.Data == null)
                 {
@@ -63,17 +55,6 @@ namespace Edge.Services
                 }
 
                 var smtpSettings = smtpSettingsResponse.Data;
-
-                // On Register
-                // Check if SMTP settings are enabled
-                if (!smtpSettings.EnableSmtpSettings)
-                {
-                    // SMTP settings are disabled, return success without sending email
-                    result.Data = true;
-                    result.Succeeded = true;
-                    result.ResponseCode = EDataResponseCode.Success;
-                    return result;
-                }
 
                 using (var smtpClient = new SmtpClient(smtpSettings.Host, smtpSettings.Port))
                 {

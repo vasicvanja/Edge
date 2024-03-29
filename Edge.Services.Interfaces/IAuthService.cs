@@ -1,6 +1,7 @@
 ﻿using Edge.Dtos;
 using Edge.Shared.DataContracts.Responses;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Edge.Services.Interfaces
 {

@@ -24,6 +24,7 @@ namespace Edge.Services
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
+        private readonly ISmtpSettingsService _smtpSettingsService;
 
         #endregion
 
@@ -37,16 +38,21 @@ namespace Edge.Services
         /// <param name="signInManager"></param>
         /// <param name="configuration"></param>
         /// <param name="emailService"></param>
-        public AuthService(UserManager<IdentityUser> userManager, 
+        /// <param name="smtpSettingsService"></param>
+        public AuthService(
+            UserManager<IdentityUser> userManager, 
             RoleManager<IdentityRole> roleManager, 
             SignInManager<IdentityUser> signInManager,
-            IConfiguration configuration, IEmailService emailService)
+            IConfiguration configuration, 
+            IEmailService emailService,
+            ISmtpSettingsService smtpSettingsService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _emailService = emailService;
+            _smtpSettingsService = smtpSettingsService;
         }
 
         #endregion
@@ -92,6 +98,10 @@ namespace Edge.Services
                 throw new InvalidOperationException(ResponseMessages.NonExistingRole);
             }
 
+            var smtpSettings = await _smtpSettingsService.GetSmtpSettings();
+
+            if (smtpSettings.Data == null || !smtpSettings.Data.EnableSmtpSettings) return createResult;
+
             var emailMessage = new EmailMessageDto
             {
                 Email = registerDto.Email,
@@ -114,14 +124,8 @@ namespace Edge.Services
         /// <exception cref="AuthenticationException"></exception>
         public async Task<string> Login(LoginDto loginDto)
         {
-            var doesUserExist = await CheckIfUserExist(loginDto.Username);
+            var user = await _userManager.FindByNameAsync(loginDto.Username) ?? throw new InvalidOperationException(ResponseMessages.UserDoesNotExist);
 
-            if (!doesUserExist)
-            {
-                throw new InvalidOperationException(ResponseMessages.UserDoesNotExist);
-            }
-
-            var user = await _userManager.FindByNameAsync(loginDto.Username);
             var passwordCheck = await _userManager.CheckPasswordAsync(user, loginDto.Password);
 
             if (passwordCheck)
@@ -129,7 +133,7 @@ namespace Edge.Services
                 var userRoles = await _userManager.GetRolesAsync(user);
                 var authClaims = new List<Claim>
                 {
-                    new(ClaimTypes.Name, user.UserName),
+                    new(ClaimTypes.Name, user.UserName!),
                     new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
 
@@ -168,6 +172,30 @@ namespace Edge.Services
         {
             try
             {
+                var smtpSettings = await _smtpSettingsService.GetSmtpSettings();
+
+                if (smtpSettings.Data == null)
+                {
+                    return new DataResponse<bool>
+                    {
+                        Data = false,
+                        ResponseCode = EDataResponseCode.GenericError,
+                        ErrorMessage = ResponseMessages.SmtpSettingsNotDefined,
+                        Succeeded = false
+                    };
+                }
+
+                if (smtpSettings.Data != null && !smtpSettings.Data.EnableSmtpSettings)
+                {
+                    return new DataResponse<bool>
+                    {
+                        Data = false,
+                        ResponseCode = EDataResponseCode.GenericError,
+                        ErrorMessage = ResponseMessages.SmtpSettingsDisabled,
+                        Succeeded = false
+                    };
+                }
+
                 var emailMessage = new EmailMessageDto
                 {
                     Email = email,
@@ -197,7 +225,6 @@ namespace Edge.Services
         /// </summary>
         /// <param name="resetPassword"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<DataResponse<bool>> ResetPassword(ResetPasswordDto resetPassword)
         {
             var result = new DataResponse<bool> { Data = false, Succeeded = false };
@@ -240,7 +267,6 @@ namespace Edge.Services
                 return result;
             }
         }
-
 
         #endregion
 
