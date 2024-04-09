@@ -234,6 +234,42 @@ namespace Edge.Repositories
             }
         }
 
+        /// <summary>
+        /// Update Artworks in database after successful payment.
+        /// </summary>
+        /// <param name="artworks"></param>
+        /// <returns></returns>
+        public async Task<DataResponse<bool>> UpdateArtworkQuantity(List<ArtworkDto> artworks)
+        {
+            var result = new DataResponse<bool> { Data = false, Succeeded = false };
+
+            try
+            {
+                foreach (var artwork in artworks)
+                {
+                    var artworkDb = await _applicationDbContext.Artworks.FirstOrDefaultAsync(x => x.Id == artwork.Id);
+                    if (artworkDb != null)
+                    {
+                        artworkDb.Quantity -= artwork.Quantity;
+                    }
+                }
+                await _applicationDbContext.SaveChangesAsync();
+
+                result.Data = true;
+                result.Succeeded = true;
+                result.ResponseCode = EDataResponseCode.Success;
+
+                return result;
+            }
+            catch (Exception)
+            {
+                result.ResponseCode = EDataResponseCode.GenericError;
+                result.ErrorMessage = string.Format(ResponseMessages.UnsuccessfulUpdateOfEntity, nameof(Artwork));
+
+                return result;
+            }
+        }
+
         #endregion
 
         #region DELETE

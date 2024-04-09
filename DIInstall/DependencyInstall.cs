@@ -38,6 +38,9 @@ namespace DIInstall
 
             // Password Encryption
             serviceCollection.AddScoped<IPasswordEncryptionService, PasswordEncryptionService>();
+
+            // Stripe Integration
+            serviceCollection.AddScoped<IStripeService, StripeService>();
         }
     }
 }

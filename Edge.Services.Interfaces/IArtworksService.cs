@@ -38,5 +38,12 @@ namespace Edge.Services.Interfaces
         /// <param name="Id"></param>
         /// <returns></returns>
         Task<DataResponse<bool>> Delete(int Id);
+
+        /// <summary>
+        /// Update Artwork in database after payment.
+        /// </summary>
+        /// <param name="artworkDto"></param>
+        /// <returns></returns>
+        Task<DataResponse<bool>> UpdateArtworkQuantity(List<ArtworkDto> artworks);
     }
 }
