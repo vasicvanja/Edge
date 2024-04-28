@@ -7,14 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.3" />
-    <PackageReference Include="Stripe.net" Version="43.21.0" />
+    <PackageReference Include="Stripe.net" Version="44.2.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Edge.Data.EF\Edge.Data.EF.csproj" />
     <ProjectReference Include="..\Edge.DomainModels\Edge.DomainModels.csproj" />
     <ProjectReference Include="..\Edge.Repositories.Interfaces\Edge.Repositories.Interfaces.csproj" />
     <ProjectReference Include="..\Edge.Services.Interfaces\Edge.Services.Interfaces.csproj" />

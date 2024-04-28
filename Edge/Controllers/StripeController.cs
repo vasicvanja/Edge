@@ -29,8 +29,14 @@ namespace Edge.Controllers
 
         #endregion
 
-        #region Methods
+        #region CHECKOUT SESSION
 
+        /// <summary>
+        /// Creates a Stripe Checkout Session on a stripe-hosted page.
+        /// </summary>
+        /// <param name="artworks"></param>
+        /// <returns></returns>
+        /// 
         [HttpPost]
         [Route("createCheckoutSession")]
         public async Task<IActionResult> CreateCheckOutSession(List<ArtworkDto> artworks)
@@ -50,6 +56,36 @@ namespace Edge.Controllers
                     ErrorMessage = ex.Message
                 };
                 return BadRequest(Conversion<PaymentDetailsDto>.ReturnResponse(errRet));
+            }
+        }
+
+        #endregion
+
+        #region WEBHOOK
+
+        /// <summary>
+        /// Retrieve information whether a payment was successful or not.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("webhook")]
+        public async Task<IActionResult> Webhook()
+        {
+            try
+            {
+                var result = await _stripeService.Webhook(HttpContext.Request.Body, Request.Headers["Stripe-Signature"]);
+                return Ok(Conversion<bool>.ReturnResponse(result));
+            }
+            catch (Exception ex)
+            {
+                var errRet = new DataResponse<bool>
+                {
+                    Data = false,
+                    ResponseCode = EDataResponseCode.GenericError,
+                    Succeeded = false,
+                    ErrorMessage = ex.Message
+                };
+                return BadRequest(Conversion<bool>.ReturnResponse(errRet));
             }
         }
 
