@@ -1,6 +1,5 @@
 using DIInstall;
 using Edge.Data.EF;
-using Edge.DomainModels;
 using Edge.Dtos;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

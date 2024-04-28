@@ -4,6 +4,7 @@ using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
 using Edge.Shared.DataContracts.Responses;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
@@ -17,6 +18,7 @@ namespace Edge.Services
         private readonly StripeSettingsDto _stripeSettings;
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly IArtworksService _artworksService;
+        private readonly IConfiguration _configuration;
 
         #endregion
 
@@ -27,12 +29,13 @@ namespace Edge.Services
         /// </summary>
         /// <param name="stripeSettings"></param>
         /// <param name="applicationDbContext"></param>
-        public StripeService(IOptions<StripeSettingsDto> stripeSettings, ApplicationDbContext applicationDbContext, IArtworksService artworksService)
+        public StripeService(IOptions<StripeSettingsDto> stripeSettings, ApplicationDbContext applicationDbContext, IArtworksService artworksService, IConfiguration configuration)
         {
             _stripeSettings = stripeSettings.Value;
-            _applicationDbContext = applicationDbContext;
             StripeConfiguration.ApiKey = _stripeSettings.SecretKey;
+            _applicationDbContext = applicationDbContext;
             _artworksService = artworksService;
+            _configuration = configuration;
         }
 
         #endregion
@@ -76,6 +79,8 @@ namespace Edge.Services
                     });
                 }
 
+                var clientUrl = _configuration.GetValue<string>("ClientApp:Url");
+
                 var options = new SessionCreateOptions
                 {
                     PaymentMethodTypes = new List<string>
@@ -84,8 +89,8 @@ namespace Edge.Services
                     },
                     LineItems = lineItems,
                     Mode = "payment",
-                    SuccessUrl = "https://example.com/success",
-                    CancelUrl = "https://example.com/cancel",
+                    SuccessUrl = clientUrl + "/successful-payment",
+                    CancelUrl = clientUrl + "/unsuccessful-payment",
                 };
 
                 var service = new SessionService();
@@ -152,7 +157,7 @@ namespace Edge.Services
                 }
                 else
                 {
-                    result.ResponseCode = EDataResponseCode.UnhandledEvent;
+                    result.ResponseCode = EDataResponseCode.CheckoutSessionNotCompleted;
                     result.ErrorMessage = string.Format(ResponseMessages.UnhandledStripeEvent, stripeEvent.Type);
                 }
 
