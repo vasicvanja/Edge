@@ -9,6 +9,8 @@ using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
 
+#pragma warning disable CS8629 // Nullable value type may be null.
+
 namespace Edge.Services
 {
     public class StripeService : IStripeService
@@ -18,6 +20,7 @@ namespace Edge.Services
         private readonly StripeSettingsDto _stripeSettings;
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly IArtworksService _artworksService;
+        private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
 
         #endregion
@@ -29,12 +32,21 @@ namespace Edge.Services
         /// </summary>
         /// <param name="stripeSettings"></param>
         /// <param name="applicationDbContext"></param>
-        public StripeService(IOptions<StripeSettingsDto> stripeSettings, ApplicationDbContext applicationDbContext, IArtworksService artworksService, IConfiguration configuration)
+        /// <param name="artworksService"></param>
+        /// <param name="emailService"></param>
+        /// <param name="configuration"></param>
+        public StripeService(
+            IOptions<StripeSettingsDto> stripeSettings, 
+            ApplicationDbContext applicationDbContext, 
+            IArtworksService artworksService, 
+            IEmailService emailService, 
+            IConfiguration configuration)
         {
             _stripeSettings = stripeSettings.Value;
             StripeConfiguration.ApiKey = _stripeSettings.SecretKey;
             _applicationDbContext = applicationDbContext;
             _artworksService = artworksService;
+            _emailService = emailService;
             _configuration = configuration;
         }
 
@@ -90,7 +102,7 @@ namespace Edge.Services
                     LineItems = lineItems,
                     Mode = "payment",
                     SuccessUrl = clientUrl + "/successful-payment",
-                    CancelUrl = clientUrl + "/unsuccessful-payment",
+                    CancelUrl = clientUrl + "/unsuccessful-payment"
                 };
 
                 var service = new SessionService();
@@ -150,6 +162,10 @@ namespace Edge.Services
                     var session = stripeEvent.Data.Object as Session;
                     List<ArtworkDto> artworks = await GetSessionArtworks(session);
                     await _artworksService.UpdateArtworkQuantity(artworks);
+
+                    // Send an email to the user with the details of the purchased artworks
+                    var userEmail = session.CustomerDetails.Email;
+                    await _emailService.SendPurchaseConfirmationEmail(userEmail, artworks);
 
                     result.Data = true;
                     result.Succeeded = true;
