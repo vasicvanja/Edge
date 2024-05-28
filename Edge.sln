@@ -3,29 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edge", "Edge\Edge.csproj", "{5A17A74D-730F-414B-AA0E-76C36B9A1A0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge", "Edge\Edge.csproj", "{5A17A74D-730F-414B-AA0E-76C36B9A1A0C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{C29A3E78-3EAD-4FC5-AFCB-70DA496B7CCA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{987D9C11-9374-4578-8D20-1221EC4C45A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edge.Services", "Edge.Services\Edge.Services.csproj", "{156B771B-1161-44A6-B95C-75446464ADE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge.Services", "Edge.Services\Edge.Services.csproj", "{156B771B-1161-44A6-B95C-75446464ADE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edge.Services.Interfaces", "Edge.Services.Interfaces\Edge.Services.Interfaces.csproj", "{5EAD6510-B038-46D0-80B9-D5BDE01B2FA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge.Services.Interfaces", "Edge.Services.Interfaces\Edge.Services.Interfaces.csproj", "{5EAD6510-B038-46D0-80B9-D5BDE01B2FA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edge.Repositories", "Edge.Repositories\Edge.Repositories.csproj", "{132530A4-75A5-449B-AAD5-4355ACB0C02F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge.Repositories", "Edge.Repositories\Edge.Repositories.csproj", "{132530A4-75A5-449B-AAD5-4355ACB0C02F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edge.Repositories.Interfaces", "Edge.Repositories.Interfaces\Edge.Repositories.Interfaces.csproj", "{38D2E9A5-7148-4C4A-8443-1044276F82D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge.Repositories.Interfaces", "Edge.Repositories.Interfaces\Edge.Repositories.Interfaces.csproj", "{38D2E9A5-7148-4C4A-8443-1044276F82D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edge.DomainModels", "Edge.DomainModels\Edge.DomainModels.csproj", "{78B33A51-D864-4C9F-97D1-19AEED18537E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge.DomainModels", "Edge.DomainModels\Edge.DomainModels.csproj", "{78B33A51-D864-4C9F-97D1-19AEED18537E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edge.Dtos", "Edge.Dtos\Edge.Dtos.csproj", "{EE5F0E87-AC5C-49E1-A89F-FBBCCC05E587}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge.Dtos", "Edge.Dtos\Edge.Dtos.csproj", "{EE5F0E87-AC5C-49E1-A89F-FBBCCC05E587}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edge.Data.EF", "Edge.Data.EF\Edge.Data.EF.csproj", "{324683A7-FD9A-4247-AEAF-A3913F29D9F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge.Data.EF", "Edge.Data.EF\Edge.Data.EF.csproj", "{324683A7-FD9A-4247-AEAF-A3913F29D9F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DIInstall", "DIInstall\DIInstall.csproj", "{8DE507FE-21CB-4E5E-BBF0-4C8F79C134E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DIInstall", "DIInstall\DIInstall.csproj", "{8DE507FE-21CB-4E5E-BBF0-4C8F79C134E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edge.Shared.DataContracts", "Edge.Shared.DataContracts\Edge.Shared.DataContracts.csproj", "{B77C7C47-0207-4944-A1D2-6210AFE31536}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge.Shared.DataContracts", "Edge.Shared.DataContracts\Edge.Shared.DataContracts.csproj", "{B77C7C47-0207-4944-A1D2-6210AFE31536}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

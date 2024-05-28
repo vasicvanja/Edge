@@ -11,5 +11,13 @@ namespace Edge.Services.Interfaces
         /// <param name="emailMessage"></param>
         /// <returns></returns>
         Task<DataResponse<bool>> SendEmail(EmailMessageDto emailMessage);
+
+        /// <summary>
+        /// Sends an email to the user with all the successfully purchased artworks.
+        /// </summary>
+        /// <param name="userEmail"></param>
+        /// <param name="artworks"></param>
+        /// <returns></returns>
+        Task<DataResponse<bool>> SendPurchaseConfirmationEmail(string userEmail, List<ArtworkDto> artworks);
     }
 }

@@ -27,5 +27,8 @@
         public const string UnsuccessfulPasswordReset = "Unsuccessful password reset.";
         public const string InvalidToken = "Invalid Token!";
         public const string SmtpSettingsNotDefined = "SMTP Settings are not defined. Mails cannot be sent!";
+        public const string UnsucessfulCheckoutSessionCreation = "Unsucessful creation of Stripe Checkout Session!";
+        public const string EmptyStripeWebhookJson = "Empty Stripe Webhook JSON!";
+        public const string UnhandledStripeEvent = "Stripe Checkout Session not completed.";
     }
 }

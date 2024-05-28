@@ -33,34 +33,41 @@ namespace Edge.Services
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public Task<DataResponse<ArtworkDto>> Get(int Id) => _artworkRepository.Get(Id);
+        public async Task<DataResponse<ArtworkDto>> Get(int Id) => await _artworkRepository.Get(Id);
 
         /// <summary>
         /// Get all Artworks.
         /// </summary>
         /// <returns></returns>
-        public Task<DataResponse<List<ArtworkDto>>> GetAll() => _artworkRepository.GetAll();
+        public async Task<DataResponse<List<ArtworkDto>>> GetAll() => await _artworkRepository.GetAll();
 
         /// <summary>
         /// Create an Artwork.
         /// </summary>
         /// <param name="artworkDto"></param>
         /// <returns></returns>
-        public Task<DataResponse<int>> Create(ArtworkDto artworkDto) => _artworkRepository.Create(artworkDto);
+        public async Task<DataResponse<int>> Create(ArtworkDto artworkDto) => await _artworkRepository.Create(artworkDto);
 
         /// <summary>
         /// Update an Artwork.
         /// </summary>
         /// <param name="artworkDto"></param>
         /// <returns></returns>
-        public Task<DataResponse<bool>> Update(ArtworkDto artworkDto) => _artworkRepository.Update(artworkDto);
+        public async Task<DataResponse<bool>> Update(ArtworkDto artworkDto) => await _artworkRepository.Update(artworkDto);
 
         /// <summary>
         /// Delete an Artwork.
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public Task<DataResponse<bool>> Delete(int Id) => _artworkRepository.Delete(Id);
+        public async Task<DataResponse<bool>> Delete(int Id) => await _artworkRepository.Delete(Id);
+
+        /// <summary>
+        /// Update Artwork in database after payment.
+        /// </summary>
+        /// <param name="artworks"></param>
+        /// <returns></returns>
+        public async Task<DataResponse<bool>> UpdateArtworkQuantity(List<ArtworkDto> artworks) => await _artworkRepository.UpdateArtworkQuantity(artworks);
 
         #endregion
     }

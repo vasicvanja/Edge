@@ -33,6 +33,13 @@ namespace Edge.Repositories.Interfaces
         Task<DataResponse<bool>> Update(ArtworkDto artworkDto);
 
         /// <summary>
+        /// Update Artworks in database after successful payment.
+        /// </summary>
+        /// <param name="artworks"></param>
+        /// <returns></returns>
+        Task<DataResponse<bool>> UpdateArtworkQuantity(List<ArtworkDto> artworks);
+
+        /// <summary>
         /// Delete an Artwork by Id.
         /// </summary>
         /// <param name="Id"></param>

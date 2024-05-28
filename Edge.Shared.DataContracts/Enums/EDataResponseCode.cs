@@ -17,6 +17,7 @@
         ReferenceDtoHasNoId = 8,
         Locked = 9,
         InvalidToken = 10,
+        CheckoutSessionNotCompleted = 11,
         GenericError = 10000
     }
 }
