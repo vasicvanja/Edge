@@ -10,6 +10,7 @@ using Stripe;
 using Stripe.Checkout;
 
 #pragma warning disable CS8629 // Nullable value type may be null.
+#pragma warning disable CS8604 // Possible null reference argument.
 
 namespace Edge.Services
 {
@@ -83,6 +84,7 @@ namespace Edge.Services
                             Currency = "usd",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
+                                //TODO: Pass both the Artwork's Name and Id
                                 Name = artwork.Id.ToString()
                             },
                             UnitAmount = (long?)(artwork.Price * 100), // Price in cents
