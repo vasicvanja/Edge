@@ -149,6 +149,7 @@ namespace Edge.Repositories
                 {
                     Name = cycleDto.Name,
                     Description = cycleDto.Description,
+                    ImageData = cycleDto.ImageData,
                     Artworks = _mapper.Map<List<Artwork>>(cycleDto.Artworks)
                 };
 
