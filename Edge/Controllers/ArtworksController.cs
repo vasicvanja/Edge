@@ -95,10 +95,14 @@ namespace Edge.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> Create(ArtworkDto artwork)
+        public async Task<IActionResult> Create([FromBody] ArtworkDto artwork)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 var result = await _artworkService.Create(artwork);
                 return Ok(Conversion<int>.ReturnResponse(result));
             }
