@@ -84,6 +84,32 @@ namespace Edge.Controllers
             }
         }
 
+        /// <summary>
+        /// Get all unassociated Artworks.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("all-unassociated")]
+        public async Task<IActionResult> GetAllUnassociatedArtworks()
+        {
+            try
+            {
+                var artworks = await _artworkService.GetAllUnassociatedArtworks();
+                return Ok(Conversion<List<ArtworkDto>>.ReturnResponse(artworks));
+            }
+            catch (Exception ex)
+            {
+                var errRet = new DataResponse<List<ArtworkDto>>
+                {
+                    Data = null,
+                    ResponseCode = EDataResponseCode.GenericError,
+                    Succeeded = false,
+                    ErrorMessage = ex.Message
+                };
+                return BadRequest(Conversion<List<ArtworkDto>>.ReturnResponse(errRet));
+            }
+        }
+
         #endregion
 
         #region CREATE

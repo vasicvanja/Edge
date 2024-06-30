@@ -86,13 +86,13 @@ namespace Edge.Controllers
         #region CREATE
 
         /// <summary>
-        /// Create new Cycle.
+        /// Create new Cycle with associated Artworks.
         /// </summary>
         /// <param name="cycle"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> Create(CycleDto cycle)
+        public async Task<IActionResult> Create(CreateCycleDto cycle)
         {
             try
             {

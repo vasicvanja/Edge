@@ -37,14 +37,14 @@ namespace Edge.Services
         public Task<DataResponse<List<CycleDto>>> GetAll() => _cycleRepository.GetAll();
 
         /// <summary>
-        /// Create a Cycle.
+        /// Create a Cycle with associated Artworks.
         /// </summary>
-        /// <param name="cycleDto"></param>
+        /// <param name="createCycleDto"></param>
         /// <returns></returns>
-        public Task<DataResponse<int>> Create(CycleDto cycleDto) => _cycleRepository.Create(cycleDto);
+        public Task<DataResponse<int>> Create(CreateCycleDto createCycleDto) => _cycleRepository.Create(createCycleDto);
 
         /// <summary>
-        /// Update an Cydl3.
+        /// Update a Cycle.
         /// </summary>
         /// <param name="cycleDto"></param>
         /// <returns></returns>

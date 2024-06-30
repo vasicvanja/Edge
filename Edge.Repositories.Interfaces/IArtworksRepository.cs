@@ -19,6 +19,12 @@ namespace Edge.Repositories.Interfaces
         Task<DataResponse<List<ArtworkDto>>> GetAll();
 
         /// <summary>
+        /// Get all unassociated Artworks.
+        /// </summary>
+        /// <returns></returns>
+        Task<DataResponse<List<ArtworkDto>>> GetAllUnassociatedArtworks();
+
+        /// <summary>
         /// Create an Artwork.
         /// </summary>
         /// <param name="artworkDto"></param>
