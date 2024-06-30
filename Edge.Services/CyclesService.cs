@@ -48,7 +48,7 @@ namespace Edge.Services
         /// </summary>
         /// <param name="cycleDto"></param>
         /// <returns></returns>
-        public Task<DataResponse<bool>> Update(CycleDto cycleDto) => _cycleRepository.Update(cycleDto);
+        public Task<DataResponse<bool>> Update(CreateCycleDto createCycleDto) => _cycleRepository.Update(createCycleDto);
 
         /// <summary>
         /// Delete a Cycle.

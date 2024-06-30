@@ -21,6 +21,8 @@ namespace Edge.Mappers
             // Cycle
             CreateMap<Cycle, CycleDto>();
             CreateMap<CycleDto, Cycle>();
+            CreateMap<CreateCycleDto, Cycle>()
+                .ForMember(dest => dest.Artworks, opt => opt.Ignore());
 
             // SmtpSettings
             CreateMap<SmtpSettings, SmtpSettingsDto>();

@@ -30,7 +30,7 @@ namespace Edge.Repositories.Interfaces
         /// </summary>
         /// <param name="cycleDto"></param>
         /// <returns></returns>
-        Task<DataResponse<bool>> Update(CycleDto cycleDto);
+        Task<DataResponse<bool>> Update(CreateCycleDto createCycleDto);
 
         /// <summary>
         /// Delete a Cycle by Id.

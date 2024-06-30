@@ -123,7 +123,7 @@ namespace Edge.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("update")]
-        public async Task<IActionResult> Update(CycleDto cycle)
+        public async Task<IActionResult> Update(CreateCycleDto cycle)
         {
             try
             {
