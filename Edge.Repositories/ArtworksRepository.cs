@@ -109,6 +109,44 @@ namespace Edge.Repositories
             }
         }
 
+        /// <summary>
+        /// Get all unassociated Artworks.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<DataResponse<List<ArtworkDto>>> GetAllUnassociatedArtworks()
+        {
+            var result = new DataResponse<List<ArtworkDto>> { Data = new List<ArtworkDto>(), Succeeded = false };
+
+            try
+            {
+                var artworks = await _applicationDbContext.Artworks.Where(x => x.CycleId == null).ToListAsync();
+
+                if (artworks == null)
+                {
+                    result.ResponseCode = EDataResponseCode.NoDataFound;
+                    result.ErrorMessage = ResponseMessages.NoDataFound;
+
+                    return result;
+                }
+
+                var artworkDto = _mapper.Map<List<Artwork>, List<ArtworkDto>>(artworks);
+
+                result.ResponseCode = EDataResponseCode.Success;
+                result.Succeeded = true;
+                result.Data = artworkDto;
+
+                return result;
+            }
+            catch (Exception)
+            {
+                result.Data = null;
+                result.ResponseCode = EDataResponseCode.GenericError;
+                result.ErrorMessage = string.Format(ResponseMessages.GettingEntitiesFailed, nameof(Artwork));
+
+                return result;
+            }
+        }
+
         #endregion
 
         #region CREATE

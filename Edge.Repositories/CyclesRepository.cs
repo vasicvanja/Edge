@@ -117,17 +117,17 @@ namespace Edge.Repositories
         #region CREATE
 
         /// <summary>
-        /// Create a Cycle.
+        /// Create a Cycle with associated Artworks.
         /// </summary>
-        /// <param name="cycleDto"></param>
+        /// <param name="createCycleDto"></param>
         /// <returns></returns>
-        public async Task<DataResponse<int>> Create(CycleDto cycleDto)
+        public async Task<DataResponse<int>> Create(CreateCycleDto createCycleDto)
         {
             var result = new DataResponse<int>();
 
             try
             {
-                if (cycleDto == null)
+                if (createCycleDto == null)
                 {
                     result.ResponseCode = EDataResponseCode.InvalidInputParameter;
                     result.ErrorMessage = string.Format(ResponseMessages.InvalidInputParameter, nameof(Cycle));
@@ -135,23 +135,20 @@ namespace Edge.Repositories
                     return result;
                 }
 
-                var existingCycle = await _applicationDbContext.Cycles.FirstOrDefaultAsync(x => x.Id == cycleDto.Id);
-
-                if (existingCycle != null)
-                {
-                    result.ResponseCode = EDataResponseCode.InvalidInputParameter;
-                    result.ErrorMessage = string.Format(ResponseMessages.EntityAlreadyExists, nameof(Cycle), cycleDto.Id);
-
-                    return result;
-                }
-
                 var cycle = new Cycle
                 {
-                    Name = cycleDto.Name,
-                    Description = cycleDto.Description,
-                    ImageData = cycleDto.ImageData,
-                    Artworks = _mapper.Map<List<Artwork>>(cycleDto.Artworks)
+                    Name = createCycleDto.Name,
+                    Description = createCycleDto.Description,
+                    ImageData = createCycleDto.ImageData
                 };
+
+                if (createCycleDto.ArtworkIds != null && createCycleDto.ArtworkIds.Any())
+                {
+                    var artworks = await _applicationDbContext.Artworks
+                        .Where(a => createCycleDto.ArtworkIds.Contains(a.Id))
+                        .ToListAsync();
+                    cycle.Artworks = artworks;
+                }
 
                 await _applicationDbContext.Cycles.AddAsync(cycle);
                 await _applicationDbContext.SaveChangesAsync();
@@ -161,7 +158,6 @@ namespace Edge.Repositories
                 result.Succeeded = true;
 
                 return result;
-
             }
             catch (Exception)
             {
@@ -179,13 +175,13 @@ namespace Edge.Repositories
         /// <summary>
         /// Update a Cycle.
         /// </summary>
-        /// <param name="cycleDto"></param>
+        /// <param name="createCycleDto"></param>
         /// <returns></returns>
-        public async Task<DataResponse<bool>> Update(CycleDto cycleDto)
+        public async Task<DataResponse<bool>> Update(CreateCycleDto createCycleDto)
         {
             var result = new DataResponse<bool>() { Data = false, Succeeded = false };
 
-            if (cycleDto == null)
+            if (createCycleDto == null)
             {
                 result.ResponseCode = EDataResponseCode.InvalidInputParameter;
                 result.ErrorMessage = string.Format(ResponseMessages.InvalidInputParameter, nameof(Cycle));
@@ -195,17 +191,22 @@ namespace Edge.Repositories
 
             try
             {
-                var existingCycle = await _applicationDbContext.Cycles.FirstOrDefaultAsync(x => x.Id == cycleDto.Id);
+                var existingCycle = await _applicationDbContext.Cycles.FirstOrDefaultAsync(x => x.Id == createCycleDto.Id);
 
                 if (existingCycle == null)
                 {
                     result.ResponseCode = EDataResponseCode.NoDataFound;
-                    result.ErrorMessage = string.Format(ResponseMessages.NoDataFoundForKey, nameof(Cycle), cycleDto.Id);
+                    result.ErrorMessage = string.Format(ResponseMessages.NoDataFoundForKey, nameof(Cycle), createCycleDto.Id);
 
                     return result;
                 }
 
-                _mapper.Map(cycleDto, existingCycle);
+                _mapper.Map(createCycleDto, existingCycle);
+
+                var artworks = await _applicationDbContext.Artworks
+                        .Where(a => createCycleDto.ArtworkIds.Contains(a.Id))
+                        .ToListAsync();
+                existingCycle.Artworks = artworks;
 
                 await _applicationDbContext.SaveChangesAsync();
 

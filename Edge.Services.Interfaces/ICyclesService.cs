@@ -19,18 +19,18 @@ namespace Edge.Services.Interfaces
         Task<DataResponse<List<CycleDto>>> GetAll();
 
         /// <summary>
-        /// Create a Cycle.
+        /// Create a Cycle with associated Artworks.
         /// </summary>
-        /// <param name="cycleDto"></param>
+        /// <param name="createCycleDto"></param>
         /// <returns></returns>
-        Task<DataResponse<int>> Create(CycleDto cycleDto);
+        Task<DataResponse<int>> Create(CreateCycleDto createCycleDto);
 
         /// <summary>
         /// Update a Cycle.
         /// </summary>
         /// <param name="cycleDto"></param>
         /// <returns></returns>
-        Task<DataResponse<bool>> Update(CycleDto cycleDto);
+        Task<DataResponse<bool>> Update(CreateCycleDto createCycleDto);
 
         /// <summary>
         /// Delete a Cycle by Id.
