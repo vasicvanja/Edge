@@ -131,7 +131,7 @@ namespace Edge.Services
 
             if (passwordCheck)
             {
-                var userRoles = await _userManager.GetRolesAsync(user); 
+                var userRoles = await _userManager.GetRolesAsync(user);
                 var authClaims = new List<Claim>
                 {
                     new(ClaimTypes.Name, user.UserName!),
