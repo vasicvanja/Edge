@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Security.Authentication;
 using System.Text.Json;
-using System.Web;
 
 namespace Edge.Controllers
 {
