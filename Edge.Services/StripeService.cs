@@ -159,7 +159,7 @@ namespace Edge.Services
 
                 var stripeEvent = EventUtility.ConstructEvent(json, signature, _stripeSettings.WebhookSecret);
 
-                if (stripeEvent.Type == Events.CheckoutSessionCompleted)
+                if (stripeEvent.Type == EventTypes.CheckoutSessionCompleted)
                 {
                     var session = stripeEvent.Data.Object as Session;
                     List<ArtworkDto> artworks = await GetSessionArtworks(session);

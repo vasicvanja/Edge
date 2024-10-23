@@ -2,6 +2,7 @@
 using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Edge.Controllers
@@ -147,11 +148,12 @@ namespace Edge.Controllers
         #region DELETE
 
         /// <summary>
-        /// Delete an Artwork by Id.
+        /// Delete a Contact Message by Id.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [Route("delete")]
         public async Task<IActionResult> Delete(int id)
         {

@@ -91,6 +91,7 @@ namespace Edge.Controllers
         /// <param name="cycle"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [Route("create")]
         public async Task<IActionResult> Create(CreateCycleDto cycle)
         {
@@ -122,6 +123,7 @@ namespace Edge.Controllers
         /// <param name="cycle"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [Route("update")]
         public async Task<IActionResult> Update(CreateCycleDto cycle)
         {
@@ -153,6 +155,7 @@ namespace Edge.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [Route("delete")]
         public async Task<IActionResult> Delete(int id)
         {
