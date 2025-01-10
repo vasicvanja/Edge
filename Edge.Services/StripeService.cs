@@ -23,6 +23,7 @@ namespace Edge.Services
         private readonly IArtworksService _artworksService;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
+        private readonly SessionLineItemService _sessionLineItemService;
 
         #endregion
 
@@ -36,12 +37,14 @@ namespace Edge.Services
         /// <param name="artworksService"></param>
         /// <param name="emailService"></param>
         /// <param name="configuration"></param>
+        /// <param name="sessionLineItemService"></param>
         public StripeService(
             IOptions<StripeSettingsDto> stripeSettings, 
             ApplicationDbContext applicationDbContext, 
             IArtworksService artworksService, 
             IEmailService emailService, 
-            IConfiguration configuration)
+            IConfiguration configuration,
+            SessionLineItemService sessionLineItemService)
         {
             _stripeSettings = stripeSettings.Value;
             StripeConfiguration.ApiKey = _stripeSettings.SecretKey;
@@ -49,6 +52,7 @@ namespace Edge.Services
             _artworksService = artworksService;
             _emailService = emailService;
             _configuration = configuration;
+            _sessionLineItemService = sessionLineItemService;
         }
 
         #endregion
@@ -203,8 +207,8 @@ namespace Edge.Services
         {
             var artworkDtos = new List<ArtworkDto>();
 
-            var service = new SessionService();
-            var lineItems = await service.ListLineItemsAsync(session.Id);
+            var clientUrl = _configuration.GetValue<string>("ClientApp:Url");
+            var lineItems = await _sessionLineItemService.ListAsync(clientUrl);
 
             try
             {
