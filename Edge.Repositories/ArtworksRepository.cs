@@ -6,6 +6,7 @@ using Edge.Repositories.Interfaces;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
 using Edge.Shared.DataContracts.Responses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Edge.Repositories
@@ -16,6 +17,7 @@ namespace Edge.Repositories
 
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         #endregion
 
@@ -26,10 +28,12 @@ namespace Edge.Repositories
         /// </summary>
         /// <param name="applicationDbContext"></param>
         /// <param name="mapper"></param>
-        public ArtworksRepository(ApplicationDbContext applicationDbContext, IMapper mapper)
+        /// <param name="httpContextAccessor"></param> 
+        public ArtworksRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _applicationDbContext = applicationDbContext;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         #endregion
@@ -180,6 +184,10 @@ namespace Edge.Repositories
                     return result;
                 }
 
+                var user = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
+                artworkDto.CreatedBy = user;
+                artworkDto.ModifiedBy = user;
+
                 var artwork = new Artwork
                 {
                     Name = artworkDto.Name,
@@ -190,7 +198,11 @@ namespace Edge.Repositories
                     Type = artworkDto.Type,
                     Year = artworkDto.Year,
                     ImageData = artworkDto.ImageData,
-                    CycleId = artworkDto.CycleId
+                    CycleId = artworkDto.CycleId,
+                    CreatedBy = artworkDto.CreatedBy,
+                    ModifiedBy = artworkDto.ModifiedBy,
+                    DateCreated = DateTime.UtcNow,
+                    DateModified = DateTime.UtcNow
                 };
 
                 await _applicationDbContext.Artworks.AddAsync(artwork);
@@ -252,6 +264,10 @@ namespace Edge.Repositories
 
                     return result;
                 }
+
+                var user = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
+                artworkDto.ModifiedBy = user;
+                artworkDto.DateModified = DateTime.UtcNow;
 
                 _mapper.Map(artworkDto, existArtwork);
 

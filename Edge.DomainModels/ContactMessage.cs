@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Edge.DomainModels
 {
-    public class ContactMessage
+    public class ContactMessage : AuditColumns
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Edge.DomainModels
 {
-    public class Cycle
+    public class Cycle : AuditColumns
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

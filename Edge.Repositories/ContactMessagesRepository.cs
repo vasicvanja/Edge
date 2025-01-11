@@ -81,7 +81,9 @@ namespace Edge.Repositories
 
             try
             {
-                var contactMessages = await _applicationDbContext.ContactMessages.ToListAsync();
+                var contactMessages = await _applicationDbContext.ContactMessages
+                    .OrderByDescending(x => x.DateCreated)
+                    .ToListAsync();
 
                 if (contactMessages == null)
                 {
@@ -188,7 +190,11 @@ namespace Edge.Repositories
                     Email = contactMessageDto.Email,
                     Phone = contactMessageDto.Phone,
                     Subject = contactMessageDto.Subject,
-                    Message = contactMessageDto.Message
+                    Message = contactMessageDto.Message,
+                    DateCreated = DateTime.UtcNow,
+                    DateModified = DateTime.UtcNow,
+                    CreatedBy = contactMessageDto.Email,
+                    ModifiedBy = contactMessageDto.Email
                 };
 
                 await _applicationDbContext.ContactMessages.AddAsync(contactMessage);
