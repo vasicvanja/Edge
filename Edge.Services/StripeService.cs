@@ -207,8 +207,7 @@ namespace Edge.Services
         {
             var artworkDtos = new List<ArtworkDto>();
 
-            var clientUrl = _configuration.GetValue<string>("ClientApp:Url");
-            var lineItems = await _sessionLineItemService.ListAsync(clientUrl);
+            var lineItems = await _sessionLineItemService.ListAsync(session.Id);
 
             try
             {
