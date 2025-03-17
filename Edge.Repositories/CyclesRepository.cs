@@ -6,6 +6,7 @@ using Edge.Repositories.Interfaces;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
 using Edge.Shared.DataContracts.Responses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Edge.Repositories
@@ -16,6 +17,7 @@ namespace Edge.Repositories
 
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         #endregion
 
@@ -26,10 +28,11 @@ namespace Edge.Repositories
         /// </summary>
         /// <param name="applicationDbContext"></param>
         /// <param name="mapper"></param>
-        public CyclesRepository(ApplicationDbContext applicationDbContext, IMapper mapper)
+        public CyclesRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _applicationDbContext = applicationDbContext;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         #endregion
@@ -135,11 +138,19 @@ namespace Edge.Repositories
                     return result;
                 }
 
+                var user = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
+                createCycleDto.CreatedBy = user;
+                createCycleDto.ModifiedBy = user;
+
                 var cycle = new Cycle
                 {
                     Name = createCycleDto.Name,
                     Description = createCycleDto.Description,
-                    ImageData = createCycleDto.ImageData
+                    ImageData = createCycleDto.ImageData,
+                    CreatedBy = createCycleDto.CreatedBy,
+                    ModifiedBy = createCycleDto.ModifiedBy,
+                    DateCreated = DateTime.UtcNow,
+                    DateModified = DateTime.UtcNow
                 };
 
                 if (createCycleDto.ArtworkIds != null && createCycleDto.ArtworkIds.Any())
@@ -200,6 +211,10 @@ namespace Edge.Repositories
 
                     return result;
                 }
+
+                var user = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
+                createCycleDto.ModifiedBy = user;
+                createCycleDto.DateModified = DateTime.UtcNow;
 
                 _mapper.Map(createCycleDto, existingCycle);
 

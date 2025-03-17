@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Edge.DomainModels
 {
-    public class SmtpSettings
+    public class SmtpSettings : AuditColumns
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

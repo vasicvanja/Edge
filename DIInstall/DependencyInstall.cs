@@ -3,6 +3,7 @@ using Edge.Repositories.Interfaces;
 using Edge.Services;
 using Edge.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Stripe.Checkout;
 
 namespace DIInstall
 {
@@ -41,6 +42,7 @@ namespace DIInstall
 
             // Stripe Integration
             serviceCollection.AddScoped<IStripeService, StripeService>();
+            serviceCollection.AddScoped<SessionLineItemService>();
         }
     }
 }

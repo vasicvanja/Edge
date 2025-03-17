@@ -7,6 +7,7 @@ using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
 using Edge.Shared.DataContracts.Responses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Edge.Repositories
@@ -18,6 +19,7 @@ namespace Edge.Repositories
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly IMapper _mapper;
         private readonly IPasswordEncryptionService _passwordEncryptionService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         #endregion
 
@@ -28,11 +30,13 @@ namespace Edge.Repositories
         /// <param name="applicationDbContext"></param>
         /// <param name="mapper"></param>
         /// <param name="passwordEncryptionService"></param>
-        public SmtpSettingsRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IPasswordEncryptionService passwordEncryptionService)
+        /// <param name="httpContextAccessor"></param>
+        public SmtpSettingsRepository(ApplicationDbContext applicationDbContext, IMapper mapper, IPasswordEncryptionService passwordEncryptionService, IHttpContextAccessor httpContextAccessor)
         {
             _applicationDbContext = applicationDbContext;
             _mapper = mapper;
             _passwordEncryptionService = passwordEncryptionService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         #endregion
@@ -104,6 +108,12 @@ namespace Edge.Repositories
 
                 if (existSmtpSettings == null)
                 {
+                    var user = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
+                    smtpSettingsDto.CreatedBy = user;
+                    smtpSettingsDto.ModifiedBy = user;
+                    smtpSettingsDto.DateCreated = DateTime.UtcNow;
+                    smtpSettingsDto.DateModified = DateTime.UtcNow;
+
                     var newSmtpSettings = new SmtpSettings();
                     _mapper.Map(smtpSettingsDto, newSmtpSettings);
                     newSmtpSettings.Password = _passwordEncryptionService.EncryptPassword(smtpSettingsDto.Password);
@@ -111,6 +121,9 @@ namespace Edge.Repositories
                 }
                 else
                 {
+                    var user = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
+                    smtpSettingsDto.ModifiedBy = user;
+                    smtpSettingsDto.DateModified = DateTime.UtcNow;
                     _mapper.Map(smtpSettingsDto, existSmtpSettings);
                     existSmtpSettings.Password = _passwordEncryptionService.EncryptPassword(smtpSettingsDto.Password);
                 }
@@ -129,7 +142,7 @@ namespace Edge.Repositories
                 result.ErrorMessage = string.Format(ResponseMessages.UnsuccessfulUpdateOfEntity, nameof(SmtpSettings));
 
                 return result;
-            }   
+            }
         }
 
         #endregion

@@ -1,6 +1,6 @@
 ﻿namespace Edge.Dtos
 {
-    public class SmtpSettingsDto
+    public class SmtpSettingsDto : AuditColumnsDto
     {
         public int? Id { get; set; }
         public string Username { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace Edge.Dtos
 {
-    public class ContactMessageDto
+    public class ContactMessageDto : AuditColumnsDto
     {
         public int Id { get; set; }
         public string Email { get; set; }

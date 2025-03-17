@@ -1,6 +1,6 @@
 ﻿namespace Edge.Dtos
 {
-    public class CycleDto
+    public class CycleDto : AuditColumnsDto
     {
         public int Id { get; set; }
         public string Name { get; set; }

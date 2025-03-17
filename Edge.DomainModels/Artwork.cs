@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Edge.DomainModels
 {
-    public class Artwork
+    public class Artwork : AuditColumns
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
