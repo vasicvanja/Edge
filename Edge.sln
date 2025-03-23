@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DIInstall", "DIInstall\DIIn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge.Shared.DataContracts", "Edge.Shared.DataContracts\Edge.Shared.DataContracts.csproj", "{B77C7C47-0207-4944-A1D2-6210AFE31536}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomValidation", "CustomValidation\CustomValidation.csproj", "{7DA35131-565E-497F-962D-AA6EFEE5449C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{B77C7C47-0207-4944-A1D2-6210AFE31536}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B77C7C47-0207-4944-A1D2-6210AFE31536}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B77C7C47-0207-4944-A1D2-6210AFE31536}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DA35131-565E-497F-962D-AA6EFEE5449C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DA35131-565E-497F-962D-AA6EFEE5449C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DA35131-565E-497F-962D-AA6EFEE5449C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DA35131-565E-497F-962D-AA6EFEE5449C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +93,7 @@ Global
 		{324683A7-FD9A-4247-AEAF-A3913F29D9F0} = {C29A3E78-3EAD-4FC5-AFCB-70DA496B7CCA}
 		{8DE507FE-21CB-4E5E-BBF0-4C8F79C134E5} = {987D9C11-9374-4578-8D20-1221EC4C45A7}
 		{B77C7C47-0207-4944-A1D2-6210AFE31536} = {987D9C11-9374-4578-8D20-1221EC4C45A7}
+		{7DA35131-565E-497F-962D-AA6EFEE5449C} = {987D9C11-9374-4578-8D20-1221EC4C45A7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A272BADE-397C-4202-AAD4-E23CB70DE428}

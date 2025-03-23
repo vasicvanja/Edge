@@ -1,4 +1,6 @@
-﻿using Edge.Repositories;
+﻿using CustomValidation.Impl;
+using CustomValidation.Interface;
+using Edge.Repositories;
 using Edge.Repositories.Interfaces;
 using Edge.Services;
 using Edge.Services.Interfaces;
@@ -28,6 +30,7 @@ namespace DIInstall
             // Artworks
             serviceCollection.AddScoped<IArtworksRepository, ArtworksRepository>();
             serviceCollection.AddScoped<IArtworksService, ArtworksService>();
+
             // SmtpSettings
             serviceCollection.AddScoped<ISmtpSettingsService, SmtpSettingsService>();
             serviceCollection.AddScoped<ISmtpSettingsRepository, SmtpSettingsRepository>();
@@ -43,6 +46,13 @@ namespace DIInstall
             // Stripe Integration
             serviceCollection.AddScoped<IStripeService, StripeService>();
             serviceCollection.AddScoped<SessionLineItemService>();
+
+            // Validator
+            serviceCollection.AddSingleton<IEmailValidator, EmailValidator>();
+
+            // Users
+            serviceCollection.AddScoped<IUsersRepository, UsersRepository>();
+            serviceCollection.AddScoped<IUsersService, UsersService>();
         }
     }
 }

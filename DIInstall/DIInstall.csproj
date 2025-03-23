@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CustomValidation\CustomValidation.csproj" />
     <ProjectReference Include="..\Edge.Repositories\Edge.Repositories.csproj" />
     <ProjectReference Include="..\Edge.Services.Interfaces\Edge.Services.Interfaces.csproj" />
     <ProjectReference Include="..\Edge.Services\Edge.Services.csproj" />
