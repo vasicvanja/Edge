@@ -206,7 +206,8 @@ namespace Edge.Repositories
                     UserName = user.UserName,
                     Email = user.Email,
                     NormalizedUserName = user.UserName.ToUpperInvariant(),
-                    NormalizedEmail = user.Email.ToUpperInvariant()
+                    NormalizedEmail = user.Email.ToUpperInvariant(),
+                    PhoneNumber = user.PhoneNumber
                 };
 
                 // Create user
@@ -348,6 +349,11 @@ namespace Edge.Repositories
 
                         return result;
                     }
+                }
+
+                if (!string.IsNullOrEmpty(userDto.PhoneNumber))
+                {
+                    user.PhoneNumber = userDto.PhoneNumber;
                 }
 
                 _applicationDbContext.Users.Update(user);

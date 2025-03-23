@@ -1,6 +1,5 @@
 ﻿
 using Edge.Dtos;
-using Edge.Services;
 using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Responses;
@@ -40,6 +39,7 @@ namespace Edge.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         [Route("{id}")]
         public async Task<IActionResult> Get(string id)
         {
@@ -66,6 +66,7 @@ namespace Edge.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         [Route("all")]
         public async Task<IActionResult> GetAll()
         {
@@ -97,7 +98,7 @@ namespace Edge.Controllers
         /// <param name="user"></param>
         /// <returns></returns>
         [HttpPost]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [Route("create")]
         public async Task<IActionResult> Create([FromBody] CreateUserDto user)
         {
@@ -165,7 +166,7 @@ namespace Edge.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [Route("delete")]
         public async Task<IActionResult> Delete(string id)
         {
