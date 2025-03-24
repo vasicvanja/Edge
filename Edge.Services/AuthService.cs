@@ -1,4 +1,5 @@
-﻿using Edge.Dtos;
+﻿using Edge.DomainModels;
+using Edge.Dtos;
 using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Constants;
 using Edge.Shared.DataContracts.Enums;
@@ -20,9 +21,9 @@ namespace Edge.Services
     {
         #region Declarations
 
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
         private readonly ISmtpSettingsService _smtpSettingsService;
@@ -41,9 +42,9 @@ namespace Edge.Services
         /// <param name="emailService"></param>
         /// <param name="smtpSettingsService"></param>
         public AuthService(
-            UserManager<IdentityUser> userManager,
+            UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            SignInManager<IdentityUser> signInManager,
+            SignInManager<ApplicationUser> signInManager,
             IConfiguration configuration,
             IEmailService emailService,
             ISmtpSettingsService smtpSettingsService)
@@ -76,7 +77,7 @@ namespace Edge.Services
                 throw new DuplicateNameException(ResponseMessages.UserExists);
             }
 
-            IdentityUser newUser = new()
+            ApplicationUser newUser = new()
             {
                 Email = registerDto.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),

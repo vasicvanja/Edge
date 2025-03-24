@@ -1,5 +1,6 @@
 ﻿using CustomValidation.Interface;
 using Edge.Data.EF;
+using Edge.DomainModels;
 using Edge.Dtos;
 using Edge.Repositories.Interfaces;
 using Edge.Shared.DataContracts.Constants;
@@ -16,7 +17,7 @@ namespace Edge.Repositories
         #region Declarations
 
         private readonly ApplicationDbContext _applicationDbContext;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailValidator _emailValidator;
 
         #endregion
@@ -27,7 +28,7 @@ namespace Edge.Repositories
         /// Ctor.
         /// </summary>
         /// <param name="userManager"></param>
-        public UsersRepository(ApplicationDbContext applicationDbContext, UserManager<IdentityUser> userManager, IEmailValidator emailValidator)
+        public UsersRepository(ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, IEmailValidator emailValidator)
         {
             _applicationDbContext = applicationDbContext;
             _userManager = userManager;
@@ -201,12 +202,13 @@ namespace Edge.Repositories
                 }
 
                 //Map CreateUserDto to IdentityUser
-                var identityUser = new IdentityUser
+                var identityUser = new ApplicationUser
                 {
                     UserName = user.UserName,
                     Email = user.Email,
                     NormalizedUserName = user.UserName.ToUpperInvariant(),
                     NormalizedEmail = user.Email.ToUpperInvariant(),
+                    Enabled = user.Enabled,
                     PhoneNumber = user.PhoneNumber
                 };
 
@@ -355,6 +357,8 @@ namespace Edge.Repositories
                 {
                     user.PhoneNumber = userDto.PhoneNumber;
                 }
+
+                user.Enabled = userDto.Enabled;
 
                 _applicationDbContext.Users.Update(user);
 
