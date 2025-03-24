@@ -82,7 +82,11 @@ namespace Edge.Services
                 Email = registerDto.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = registerDto.Username,
-                Enabled = true
+                Enabled = true,
+                DateCreated = DateTime.UtcNow,
+                DateModified = DateTime.UtcNow,
+                CreatedBy = registerDto.Email,
+                ModifiedBy = registerDto.Email
             };
 
             var createResult = await _userManager.CreateAsync(newUser, registerDto.Password);
@@ -263,6 +267,7 @@ namespace Edge.Services
             try
             {
                 var user = await _userManager.FindByEmailAsync(resetPassword.Email);
+
                 if (user == null)
                 {
                     result.Succeeded = false;
@@ -282,6 +287,9 @@ namespace Edge.Services
 
                     return result;
                 }
+
+                user.DateModified = DateTime.UtcNow;
+                user.ModifiedBy = resetPassword.Email;
 
                 result.ResponseCode = EDataResponseCode.Success;
                 result.Succeeded = true;

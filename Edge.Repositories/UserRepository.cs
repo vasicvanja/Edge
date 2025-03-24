@@ -7,8 +7,10 @@ using Edge.Shared.DataContracts.Constants;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
 using Edge.Shared.DataContracts.Responses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Edge.Repositories
 {
@@ -18,6 +20,7 @@ namespace Edge.Repositories
 
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEmailValidator _emailValidator;
 
         #endregion
@@ -28,10 +31,11 @@ namespace Edge.Repositories
         /// Ctor.
         /// </summary>
         /// <param name="userManager"></param>
-        public UsersRepository(ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, IEmailValidator emailValidator)
+        public UsersRepository(ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, IEmailValidator emailValidator)
         {
             _applicationDbContext = applicationDbContext;
             _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
             _emailValidator = emailValidator;
         }
 
@@ -297,6 +301,17 @@ namespace Edge.Repositories
                     return result;
                 }
 
+                if ((string.IsNullOrEmpty(userDto.ConcurrencyStamp)) ||
+                    !(userDto.ConcurrencyStamp.Equals(user.ConcurrencyStamp)))
+                {
+                    result.ResponseCode = EDataResponseCode.StaleObjectState;
+                    result.ErrorMessage = string.Format(ResponseMessages
+                        .The_record_you_are_working_on_has_been_modified_by_another_user_Changes_you_have_made_have_not_been_saved_please_resubmit,
+                        nameof(ApplicationUser));
+                    
+                    return result;
+                }
+
                 // Validate and update email if provided
                 if (!string.IsNullOrWhiteSpace(userDto.Email))
                 {
@@ -349,7 +364,7 @@ namespace Edge.Repositories
                     if (!addRoleResult.Succeeded)
                     {
                         result.ResponseCode = EDataResponseCode.GenericError;
-                        result.ErrorMessage = string.Format(ResponseMessages.UnsuccessfulUpdateOfEntity, "User");
+                        result.ErrorMessage = string.Format(ResponseMessages.UnsuccessfulUpdateOfEntity, nameof(ApplicationUser));
 
                         return result;
                     }
@@ -361,6 +376,10 @@ namespace Edge.Repositories
                 }
 
                 user.Enabled = userDto.Enabled;
+
+                var currentUser = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
+                user.DateModified = DateTime.UtcNow;
+                user.ModifiedBy = currentUser;
 
                 _applicationDbContext.Users.Update(user);
 
@@ -379,7 +398,7 @@ namespace Edge.Repositories
             {
                 await transaction.RollbackAsync();
                 result.ResponseCode = EDataResponseCode.GenericError;
-                result.ErrorMessage = string.Format(ResponseMessages.UnsuccessfulUpdateOfEntity, "User");
+                result.ErrorMessage = string.Format(ResponseMessages.UnsuccessfulUpdateOfEntity, nameof(ApplicationUser));
 
                 return result;
             }
@@ -404,12 +423,16 @@ namespace Edge.Repositories
                 if (user == null)
                 {
                     result.ResponseCode = EDataResponseCode.NoDataFound;
-                    result.ErrorMessage = string.Format(ResponseMessages.NoDataFoundForKey, "User", id);
+                    result.ErrorMessage = string.Format(ResponseMessages.NoDataFoundForKey, nameof(ApplicationUser), id);
 
                     return result;
                 }
 
                 user.Enabled = enabled;
+
+                var currentUser = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
+                user.DateModified = DateTime.UtcNow;
+                user.ModifiedBy = currentUser;
 
                 _applicationDbContext.Users.Update(user);
 
@@ -427,7 +450,7 @@ namespace Edge.Repositories
             {
                 await transaction.RollbackAsync();
                 result.ResponseCode = EDataResponseCode.GenericError;
-                result.ErrorMessage = string.Format(ResponseMessages.UnsuccessfulUpdateOfEntity, "User");
+                result.ErrorMessage = string.Format(ResponseMessages.UnsuccessfulUpdateOfEntity, nameof(ApplicationUser));
 
                 return result;
             }
@@ -485,7 +508,7 @@ namespace Edge.Repositories
                 await transaction.RollbackAsync();
 
                 result.ResponseCode = EDataResponseCode.GenericError;
-                result.ErrorMessage = string.Format(ResponseMessages.DeletionFailed, "User");
+                result.ErrorMessage = string.Format(ResponseMessages.DeletionFailed, nameof(ApplicationUser), Id);
 
                 return result;
             }
