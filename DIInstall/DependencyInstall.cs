@@ -53,6 +53,10 @@ namespace DIInstall
             // Users
             serviceCollection.AddScoped<IUsersRepository, UsersRepository>();
             serviceCollection.AddScoped<IUsersService, UsersService>();
+
+            // Roles
+            serviceCollection.AddScoped<IRolesRepository, RolesRepository>();
+            serviceCollection.AddScoped<IRolesService, RolesService>();
         }
     }
 }
