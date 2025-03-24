@@ -81,7 +81,8 @@ namespace Edge.Services
             {
                 Email = registerDto.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = registerDto.Username
+                UserName = registerDto.Username,
+                Enabled = true
             };
 
             var createResult = await _userManager.CreateAsync(newUser, registerDto.Password);
