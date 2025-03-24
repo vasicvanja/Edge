@@ -1,4 +1,5 @@
-﻿using Edge.Dtos;
+﻿
+using Edge.Dtos;
 using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Constants;
 using Edge.Shared.DataContracts.Enums;
@@ -10,11 +11,11 @@ namespace Edge.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ContactMessagesController : ControllerBase
+    public class UsersController : ControllerBase
     {
         #region Declarations
 
-        private readonly IContactMessagesService _contactMessagesService;
+        private readonly IUsersService _usersService;
 
         #endregion
 
@@ -23,10 +24,10 @@ namespace Edge.Controllers
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="contactMessagesService"></param>
-        public ContactMessagesController(IContactMessagesService contactMessagesService)
+        /// <param name="userService"></param>
+        public UsersController(IUsersService usersService)
         {
-            _contactMessagesService = contactMessagesService;
+            _usersService = usersService;
         }
 
         #endregion
@@ -34,35 +35,35 @@ namespace Edge.Controllers
         #region GET
 
         /// <summary>
-        /// Get a Contact Message by Id.
+        /// Get a User by Id.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = UserRoles.Admin)]
+        [Authorize(Roles = "Admin")]
         [Route("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get(string id)
         {
             try
             {
-                var contactMessage = await _contactMessagesService.Get(id);
-                return Ok(Conversion<ContactMessageDto>.ReturnResponse(contactMessage));
+                var user = await _usersService.Get(id);
+                return Ok(Conversion<UserDto>.ReturnResponse(user));
             }
             catch (Exception ex)
             {
-                var errRet = new DataResponse<ContactMessageDto>
+                var errRet = new DataResponse<UserDto>
                 {
                     Data = null,
                     ResponseCode = EDataResponseCode.GenericError,
                     Succeeded = false,
                     ErrorMessage = ex.Message
                 };
-                return BadRequest(Conversion<ContactMessageDto>.ReturnResponse(errRet));
+                return BadRequest(Conversion<UserDto>.ReturnResponse(errRet));
             }
         }
 
         /// <summary>
-        /// Get all Contact Messages.
+        /// Get all Users.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -72,47 +73,19 @@ namespace Edge.Controllers
         {
             try
             {
-                var contactMessages = await _contactMessagesService.GetAll();
-                return Ok(Conversion<List<ContactMessageDto>>.ReturnResponse(contactMessages));
+                var users = await _usersService.GetAll();
+                return Ok(Conversion<List<UserDto>>.ReturnResponse(users));
             }
             catch (Exception ex)
             {
-                var errRet = new DataResponse<List<ContactMessageDto>>
+                var errRet = new DataResponse<List<UserDto>>
                 {
                     Data = null,
                     ResponseCode = EDataResponseCode.GenericError,
                     Succeeded = false,
                     ErrorMessage = ex.Message
                 };
-                return BadRequest(Conversion<List<ContactMessageDto>>.ReturnResponse(errRet));
-            }
-        }
-
-        /// <summary>
-        /// Get all Contact Messages by email.
-        /// </summary>
-        /// <param name="email"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Authorize(Roles = UserRoles.Admin)]
-        [Route("allByEmail")]
-        public async Task<IActionResult> GetAllByEmail(string email)
-        {
-            try
-            {
-                var contactMessages = await _contactMessagesService.GetAllByEmail(email);
-                return Ok(Conversion<List<ContactMessageDto>>.ReturnResponse(contactMessages));
-            }
-            catch (Exception ex)
-            {
-                var errRet = new DataResponse<List<ContactMessageDto>>
-                {
-                    Data = null,
-                    ResponseCode = EDataResponseCode.GenericError,
-                    Succeeded = false,
-                    ErrorMessage = ex.Message
-                };
-                return BadRequest(Conversion<List<ContactMessageDto>>.ReturnResponse(errRet));
+                return BadRequest(Conversion<List<UserDto>>.ReturnResponse(errRet));
             }
         }
 
@@ -121,29 +94,88 @@ namespace Edge.Controllers
         #region CREATE
 
         /// <summary>
-        /// Create new Contact Message.
+        /// Create new User.
         /// </summary>
-        /// <param name="contactMessage"></param>
+        /// <param name="user"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("create")]
-        public async Task<IActionResult> Create(ContactMessageDto contactMessage)
+        public async Task<IActionResult> Create([FromBody] CreateUserDto user)
         {
             try
             {
-                var result = await _contactMessagesService.Create(contactMessage);
-                return Ok(Conversion<int>.ReturnResponse(result));
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                var result = await _usersService.Create(user);
+                return Ok(Conversion<string>.ReturnResponse(result));
             }
             catch (Exception ex)
 
             {
-                var errRet = new DataResponse<int>
+                var errRet = new DataResponse<string>
                 {
                     ResponseCode = EDataResponseCode.GenericError,
                     Succeeded = false,
                     ErrorMessage = ex.Message
                 };
-                return BadRequest(Conversion<int>.ReturnResponse(errRet));
+                return BadRequest(Conversion<string>.ReturnResponse(errRet));
+            }
+        }
+
+        #endregion
+
+        #region UPDATE
+
+        /// <summary>
+        /// Update existing User.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
+        [Route("update")]
+        public async Task<IActionResult> Update(UserDto user)
+        {
+            try
+            {
+                var result = await _usersService.Update(user);
+                return Ok(Conversion<bool>.ReturnResponse(result));
+            }
+            catch (Exception ex)
+
+            {
+                var errRet = new DataResponse<bool>
+                {
+                    ResponseCode = EDataResponseCode.GenericError,
+                    Succeeded = false,
+                    ErrorMessage = ex.Message
+                };
+                return BadRequest(Conversion<bool>.ReturnResponse(errRet));
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
+        [Route("{id}/enableDisableUser")]
+        public async Task<IActionResult> EnableDisableUser(string id, bool enabled)
+        {
+            try
+            {
+                var result = await _usersService.EnableDisableUser(id, enabled);
+                return Ok(Conversion<bool>.ReturnResponse(result));
+            }
+            catch (Exception ex)
+            {
+                var errRet = new DataResponse<bool>
+                {
+                    ResponseCode = EDataResponseCode.GenericError,
+                    Succeeded = false,
+                    ErrorMessage = ex.Message
+                };
+                return BadRequest(Conversion<bool>.ReturnResponse(errRet));
             }
         }
 
@@ -152,18 +184,18 @@ namespace Edge.Controllers
         #region DELETE
 
         /// <summary>
-        /// Delete a Contact Message by Id.
+        /// Delete a User by Id.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = UserRoles.Admin)]
         [Route("delete")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
             try
             {
-                var result = await _contactMessagesService.Delete(id);
+                var result = await _usersService.Delete(id);
                 return Ok(Conversion<bool>.ReturnResponse(result));
             }
             catch (Exception ex)

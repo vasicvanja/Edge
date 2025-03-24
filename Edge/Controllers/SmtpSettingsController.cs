@@ -1,5 +1,6 @@
 ﻿using Edge.Dtos;
 using Edge.Services.Interfaces;
+using Edge.Shared.DataContracts.Constants;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -37,6 +38,7 @@ namespace Edge.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("getSmtpSettings")]
         public async Task<IActionResult> GetSmtpSettings()
         {
@@ -68,7 +70,7 @@ namespace Edge.Controllers
         /// <param name="smtpSettings"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("update")]
         public async Task<IActionResult> Update(SmtpSettingsDto smtpSettings)
         {

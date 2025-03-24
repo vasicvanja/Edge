@@ -1,5 +1,6 @@
 ﻿using Edge.Dtos;
 using Edge.Services.Interfaces;
+using Edge.Shared.DataContracts.Constants;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -121,7 +122,7 @@ namespace Edge.Controllers
         /// <param name="artwork"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("create")]
         public async Task<IActionResult> Create([FromBody] ArtworkDto artwork)
         {
@@ -157,7 +158,7 @@ namespace Edge.Controllers
         /// <param name="artwork"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("update")]
         public async Task<IActionResult> Update(ArtworkDto artwork)
         {
@@ -189,7 +190,7 @@ namespace Edge.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("delete")]
         public async Task<IActionResult> Delete(int id)
         {

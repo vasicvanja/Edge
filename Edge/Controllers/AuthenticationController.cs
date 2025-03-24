@@ -1,4 +1,5 @@
-﻿using Edge.Dtos;
+﻿using Edge.DomainModels;
+using Edge.Dtos;
 using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
@@ -18,7 +19,7 @@ namespace Edge.Controllers
         #region Declarations
 
         private readonly IAuthService _authService;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
 
         #endregion
@@ -29,7 +30,7 @@ namespace Edge.Controllers
         /// Ctor.
         /// </summary>
         /// <param name="authService"></param>
-        public AuthenticationController(IAuthService authService, UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public AuthenticationController(IAuthService authService, UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             _authService = authService;
             _userManager = userManager;
