@@ -1,5 +1,6 @@
 ﻿using Edge.Dtos;
 using Edge.Services.Interfaces;
+using Edge.Shared.DataContracts.Constants;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -38,6 +39,7 @@ namespace Edge.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -64,6 +66,7 @@ namespace Edge.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("all")]
         public async Task<IActionResult> GetAll()
         {
@@ -91,6 +94,7 @@ namespace Edge.Controllers
         /// <param name="email"></param>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("allByEmail")]
         public async Task<IActionResult> GetAllByEmail(string email)
         {
@@ -153,7 +157,7 @@ namespace Edge.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("delete")]
         public async Task<IActionResult> Delete(int id)
         {

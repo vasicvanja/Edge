@@ -8,6 +8,7 @@ using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
 using Edge.Shared.DataContracts.Responses;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Edge.Repositories
@@ -67,7 +68,8 @@ namespace Edge.Repositories
                     Id = user.Id,
                     UserName = user.UserName,
                     Email = user.Email,
-                    Role = roles[0]
+                    Role = roles[0],
+                    Enabled = user.Enabled
                 };
 
                 result.ResponseCode = EDataResponseCode.Success;
@@ -116,7 +118,8 @@ namespace Edge.Repositories
                         Id = user.Id,
                         UserName = user.UserName,
                         Email = user.Email,
-                        Role = role[0]
+                        Role = role[0],
+                        Enabled = user.Enabled
                     });
                 }
 
@@ -372,6 +375,54 @@ namespace Edge.Repositories
 
                 return result;
 
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                result.ResponseCode = EDataResponseCode.GenericError;
+                result.ErrorMessage = string.Format(ResponseMessages.UnsuccessfulUpdateOfEntity, "User");
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Enable or disable a User.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="enabled"></param>
+        /// <returns></returns>
+        public async Task<DataResponse<bool>> EnableDisableUser(string id, bool enabled)
+        {
+            var result = new DataResponse<bool> { Data = false, Succeeded = false };
+
+            await using var transaction = await _applicationDbContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                var user = await _userManager.FindByIdAsync(id);
+
+                if (user == null)
+                {
+                    result.ResponseCode = EDataResponseCode.NoDataFound;
+                    result.ErrorMessage = string.Format(ResponseMessages.NoDataFoundForKey, "User", id);
+
+                    return result;
+                }
+
+                user.Enabled = enabled;
+
+                _applicationDbContext.Users.Update(user);
+
+                await _applicationDbContext.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                result.ResponseCode = EDataResponseCode.Success;
+                result.Succeeded = true;
+                result.Data = true;
+
+                return result;
             }
             catch (Exception)
             {

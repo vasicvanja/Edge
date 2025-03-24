@@ -1,6 +1,7 @@
 ﻿
 using Edge.Dtos;
 using Edge.Services.Interfaces;
+using Edge.Shared.DataContracts.Constants;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -66,7 +67,7 @@ namespace Edge.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("all")]
         public async Task<IActionResult> GetAll()
         {
@@ -98,7 +99,7 @@ namespace Edge.Controllers
         /// <param name="user"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("create")]
         public async Task<IActionResult> Create([FromBody] CreateUserDto user)
         {
@@ -134,7 +135,7 @@ namespace Edge.Controllers
         /// <param name="user"></param>
         /// <returns></returns>
         [HttpPost]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("update")]
         public async Task<IActionResult> Update(UserDto user)
         {
@@ -156,6 +157,28 @@ namespace Edge.Controllers
             }
         }
 
+        [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
+        [Route("{id}/enableDisableUser")]
+        public async Task<IActionResult> EnableDisableUser(string id, bool enabled)
+        {
+            try
+            {
+                var result = await _usersService.EnableDisableUser(id, enabled);
+                return Ok(Conversion<bool>.ReturnResponse(result));
+            }
+            catch (Exception ex)
+            {
+                var errRet = new DataResponse<bool>
+                {
+                    ResponseCode = EDataResponseCode.GenericError,
+                    Succeeded = false,
+                    ErrorMessage = ex.Message
+                };
+                return BadRequest(Conversion<bool>.ReturnResponse(errRet));
+            }
+        }
+
         #endregion
 
         #region DELETE
@@ -166,7 +189,7 @@ namespace Edge.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("delete")]
         public async Task<IActionResult> Delete(string id)
         {

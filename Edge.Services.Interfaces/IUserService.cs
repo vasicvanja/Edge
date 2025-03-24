@@ -33,6 +33,14 @@ namespace Edge.Services.Interfaces
         Task<DataResponse<bool>> Update(UserDto updateUserDto);
 
         /// <summary>
+        /// Enable or disable a User.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="enabled"></param>
+        /// <returns></returns>
+        Task<DataResponse<bool>> EnableDisableUser(string id, bool enabled);
+
+        /// <summary>
         /// Delete a User by Id.
         /// </summary>
         /// <param name="id"></param>

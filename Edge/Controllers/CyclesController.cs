@@ -1,5 +1,6 @@
 ﻿using Edge.Dtos;
 using Edge.Services.Interfaces;
+using Edge.Shared.DataContracts.Constants;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -91,7 +92,7 @@ namespace Edge.Controllers
         /// <param name="cycle"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("create")]
         public async Task<IActionResult> Create(CreateCycleDto cycle)
         {
@@ -123,7 +124,7 @@ namespace Edge.Controllers
         /// <param name="cycle"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("update")]
         public async Task<IActionResult> Update(CreateCycleDto cycle)
         {
@@ -155,7 +156,7 @@ namespace Edge.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("delete")]
         public async Task<IActionResult> Delete(int id)
         {
