@@ -133,31 +133,57 @@ namespace Edge.Services
         {
             var user = await _userManager.FindByNameAsync(loginDto.Username) ?? throw new InvalidOperationException(ResponseMessages.UserDoesNotExist);
 
+            if (user == null)
+            {
+                throw new AuthenticationException(ResponseMessages.UserDoesNotExist);
+            }
+
+            if (!user.Enabled)
+            {
+                throw new AuthenticationException(ResponseMessages.AccountDisabledByAdministrator);
+            }
+
+            if (user.LockoutEnabled && user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow)
+            {
+                throw new AuthenticationException(string.Format(ResponseMessages.AccountDisabledDueToMultipleFailedLoginAttempts, user.LockoutEnd.Value));
+            }
+
             var passwordCheck = await _userManager.CheckPasswordAsync(user, loginDto.Password);
 
-            if (passwordCheck)
+            if (!passwordCheck)
             {
-                var userRoles = await _userManager.GetRolesAsync(user);
-                var authClaims = new List<Claim>
+                await _userManager.AccessFailedAsync(user);
+
+                // Lockout user if too many failed attempts
+                if (user.AccessFailedCount >= 3)
                 {
-                    new(ClaimTypes.Name, user.UserName!),
-                    new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                };
+                    await _userManager.SetLockoutEnabledAsync(user, true);
+                    await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddMinutes(30)); // Example lockout duration
+                }
 
-                authClaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
-
-                var signInResult = await _signInManager.PasswordSignInAsync(user, loginDto.Password, false, false);
-                var generatedToken = string.Empty;
-
-                if (!signInResult.Succeeded) return generatedToken;
-
-                generatedToken = CreateToken(authClaims);
-                return generatedToken;
-            }
-            else
-            {
                 throw new AuthenticationException(ResponseMessages.InvalidLoginPassword);
             }
+
+            // Reset failed attempts on successful login
+            await _userManager.ResetAccessFailedCountAsync(user);
+            await _userManager.SetLockoutEnabledAsync(user, false);
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>
+            {
+                new(ClaimTypes.Name, user.UserName!),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            authClaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
+
+            var signInResult = await _signInManager.PasswordSignInAsync(user, loginDto.Password, false, false);
+            var generatedToken = string.Empty;
+
+            if (!signInResult.Succeeded) return generatedToken;
+
+            generatedToken = CreateToken(authClaims);
+            return generatedToken;
         }
 
         /// <summary>
