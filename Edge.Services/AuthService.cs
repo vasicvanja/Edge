@@ -143,6 +143,7 @@ namespace Edge.Services
                 throw new AuthenticationException(ResponseMessages.AccountDisabledByAdministrator);
             }
 
+            // Check if the user is locked out
             if (user.LockoutEnabled && user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow)
             {
                 throw new AuthenticationException(string.Format(ResponseMessages.AccountDisabledDueToMultipleFailedLoginAttempts, user.LockoutEnd.Value));
