@@ -3,14 +3,12 @@ using Edge.Data.EF;
 using Edge.DomainModels;
 using Edge.Dtos;
 using Edge.Repositories.Interfaces;
-using Edge.Shared.DataContracts.Constants;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
 using Edge.Shared.DataContracts.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace Edge.Repositories
 {

@@ -6,6 +6,7 @@ using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
 using Edge.Shared.DataContracts.Responses;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
@@ -70,11 +71,40 @@ namespace Edge.Services
         /// <exception cref="InvalidOperationException"></exception>
         public async Task<IdentityResult> Register(RegisterDto registerDto)
         {
-            var doesUserExist = await CheckIfUserExist(registerDto.Username, registerDto.Email);
 
-            if (doesUserExist)
+            // Check if the user already exists
+            //var doesUserExist = await CheckIfUserExist(registerDto.Username, registerDto.Email);
+            //if (doesUserExist)
+            //{
+            //    throw new DuplicateNameException(ResponseMessages.UserExists);
+            //}
+
+            // Check if the username is already used
+            var userNameUsed = await _userManager.Users.AnyAsync(x=> x.NormalizedUserName == registerDto.Username.ToUpperInvariant());
+            if (userNameUsed)
             {
-                throw new DuplicateNameException(ResponseMessages.UserExists);
+                throw new DuplicateNameException(string.Format(ResponseMessages.UsernameAlreadyTaken, registerDto.Username));
+            }
+
+            // Check if the username is used as an email for another user
+            var usernameUsedAsEmail = await _userManager.Users.AnyAsync(x => x.NormalizedEmail == registerDto.Username.ToUpperInvariant());
+            if (usernameUsedAsEmail)
+            {
+                throw new DuplicateNameException(string.Format(ResponseMessages.UsernameAlreadyTakenAsEmailFromOtherUser, registerDto.Username));
+            }
+
+            // Check if the email is already used
+            var emailUsed = await _userManager.Users.AnyAsync(x => x.NormalizedEmail == registerDto.Email.ToUpperInvariant());
+            if (emailUsed)
+            {
+                throw new DuplicateNameException(string.Format(ResponseMessages.EmailAlreadyExists, registerDto.Email));
+            }
+
+            // Check if the email is used as a username for another user
+            var userEmailUsedAsUsername = await _userManager.Users.AnyAsync(x => x.NormalizedUserName == registerDto.Email.ToUpperInvariant());
+            if (userEmailUsedAsUsername)
+            {
+                throw new DuplicateNameException(string.Format(ResponseMessages.EmailTakenAsUsernameFromOtherUser, registerDto.Email));
             }
 
             ApplicationUser newUser = new()
@@ -360,25 +390,6 @@ namespace Edge.Services
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
-        }
-
-        /// <summary>
-        /// Check if user already exists for the provided username and email.
-        /// </summary>
-        /// <param name="username"></param>
-        /// <param name="email"></param>
-        /// <returns></returns>
-        private async Task<bool> CheckIfUserExist(string? username = null, string? email = null)
-        {
-            if (string.IsNullOrEmpty(username) && string.IsNullOrEmpty(email))
-            {
-                return false;
-            }
-
-            var doesEmailExist = !string.IsNullOrEmpty(email) ? await _userManager.FindByEmailAsync(email) : null;
-            var doesUsernameExist = !string.IsNullOrEmpty(username) ? await _userManager.FindByNameAsync(username) : null;
-
-            return doesEmailExist != null || doesUsernameExist != null;
         }
 
         #endregion
