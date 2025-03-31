@@ -26,6 +26,7 @@ namespace Edge.Data.EF
         public DbSet<Cycle> Cycles { get; set; }
         public DbSet<SmtpSettings> SmtpSettings { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
+        public DbSet<Order> Orders { get; set; }
 
         private void SeedRoles(ModelBuilder builder)
         {

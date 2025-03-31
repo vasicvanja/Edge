@@ -31,6 +31,10 @@ namespace Edge.Mappers
             // Message
             CreateMap<ContactMessage, ContactMessageDto>();
             CreateMap<ContactMessageDto, ContactMessage>();
+
+            // Order
+            CreateMap<Order, OrderDto>();
+            CreateMap<OrderDto, Order>();
         }
     }
 }
