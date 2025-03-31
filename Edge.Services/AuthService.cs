@@ -71,14 +71,6 @@ namespace Edge.Services
         /// <exception cref="InvalidOperationException"></exception>
         public async Task<IdentityResult> Register(RegisterDto registerDto)
         {
-
-            // Check if the user already exists
-            //var doesUserExist = await CheckIfUserExist(registerDto.Username, registerDto.Email);
-            //if (doesUserExist)
-            //{
-            //    throw new DuplicateNameException(ResponseMessages.UserExists);
-            //}
-
             // Check if the username is already used
             var userNameUsed = await _userManager.Users.AnyAsync(x=> x.NormalizedUserName == registerDto.Username.ToUpperInvariant());
             if (userNameUsed)
@@ -112,6 +104,7 @@ namespace Edge.Services
                 Email = registerDto.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = registerDto.Username,
+                PhoneNumber = registerDto.PhoneNumber,
                 Enabled = true,
                 DateCreated = DateTime.UtcNow,
                 DateModified = DateTime.UtcNow,
