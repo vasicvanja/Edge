@@ -3,14 +3,12 @@ using Edge.Data.EF;
 using Edge.DomainModels;
 using Edge.Dtos;
 using Edge.Repositories.Interfaces;
-using Edge.Shared.DataContracts.Constants;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
 using Edge.Shared.DataContracts.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace Edge.Repositories
 {
@@ -20,6 +18,7 @@ namespace Edge.Repositories
 
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEmailValidator _emailValidator;
 
@@ -31,10 +30,15 @@ namespace Edge.Repositories
         /// Ctor.
         /// </summary>
         /// <param name="userManager"></param>
-        public UsersRepository(ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, IEmailValidator emailValidator)
+        /// <param name="roleManager"></param>
+        /// <param name="applicationDbContext"></param>
+        /// <param name="emailValidator"></param>
+        /// <param name="httpContextAccessor"></param>
+        public UsersRepository(ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IHttpContextAccessor httpContextAccessor, IEmailValidator emailValidator)
         {
             _applicationDbContext = applicationDbContext;
             _userManager = userManager;
+            _roleManager = roleManager;
             _httpContextAccessor = httpContextAccessor;
             _emailValidator = emailValidator;
         }
@@ -71,8 +75,14 @@ namespace Edge.Repositories
                     Id = user.Id,
                     UserName = user.UserName,
                     Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
                     Role = roles[0],
-                    Enabled = user.Enabled
+                    Enabled = user.Enabled,
+                    ConcurrencyStamp = user.ConcurrencyStamp,
+                    DateCreated = user.DateCreated,
+                    DateModified = user.DateModified,
+                    CreatedBy = user.CreatedBy,
+                    ModifiedBy = user.ModifiedBy
                 };
 
                 result.ResponseCode = EDataResponseCode.Success;
@@ -121,8 +131,14 @@ namespace Edge.Repositories
                         Id = user.Id,
                         UserName = user.UserName,
                         Email = user.Email,
+                        PhoneNumber = user.PhoneNumber,
                         Role = role[0],
-                        Enabled = user.Enabled
+                        Enabled = user.Enabled,
+                        ConcurrencyStamp = user.ConcurrencyStamp,
+                        DateCreated = user.DateCreated,
+                        DateModified = user.DateModified,
+                        CreatedBy = user.CreatedBy,
+                        ModifiedBy = user.ModifiedBy
                     });
                 }
 
@@ -343,15 +359,7 @@ namespace Edge.Repositories
 
                 // Update role if provided
                 if (!string.IsNullOrEmpty(userDto.Role))
-                {
-                    if (userDto.Role != UserRoles.Admin && userDto.Role != UserRoles.User)
-                    {
-                        result.ResponseCode = EDataResponseCode.InvalidInputParameter;
-                        result.ErrorMessage = ResponseMessages.RoleMustBeAdminOrUser;
-
-                        return result;
-                    }
-
+                {                    
                     var existingRoles = await _userManager.GetRolesAsync(user);
 
                     if (existingRoles.Any())
@@ -380,6 +388,8 @@ namespace Edge.Repositories
                 var currentUser = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
                 user.DateModified = DateTime.UtcNow;
                 user.ModifiedBy = currentUser;
+                user.DateCreated = userDto.DateCreated;
+                user.CreatedBy = userDto.CreatedBy;
 
                 _applicationDbContext.Users.Update(user);
 

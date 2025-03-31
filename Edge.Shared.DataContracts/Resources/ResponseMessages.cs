@@ -39,5 +39,7 @@
         public const string UserNotUpdatedEmailAlreadyUsedAsUsernameFromOtherUser = "User {0} not updated email {1} already used as username from other user.";
         public const string FailedToAssignRoleToUser = "Failed to assign role {0} to user {1} with id {2}.";
         public const string RoleMustBeAdminOrUser = "The role must be of type Admin or User!";
+        public const string AccountDisabledDueToMultipleFailedLoginAttempts = "Your account has been disabled untill {0} due to multiple failed login attempts.";
+        public const string AccountDisabledByAdministrator = "Your account has been disabled. Please contact the administrator.";
     }
 }
