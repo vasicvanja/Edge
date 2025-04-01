@@ -24,13 +24,6 @@ namespace Edge.Repositories.Interfaces
         /// </summary>
         /// <param name="order"></param>
         /// <returns></returns>
-        Task<DataResponse<OrderDto>> Create(OrderDto order);
-
-        /// <summary>
-        /// Update Order.
-        /// </summary>
-        /// <param name="order"></param>
-        /// <returns></returns>
-        Task<DataResponse<OrderDto>> Update(OrderDto order);
+        Task<DataResponse<Guid>> Create(OrderDto orderDto);
     }
 }

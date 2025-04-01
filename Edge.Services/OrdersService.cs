@@ -47,14 +47,7 @@ namespace Edge.Services
         /// </summary>
         /// <param name="order"></param>
         /// <returns></returns>
-        public Task<DataResponse<OrderDto>> Create(OrderDto order) => _ordersRepository.Create(order);
-
-        /// <summary>
-        /// Update Order.
-        /// </summary>
-        /// <param name="order"></param>
-        /// <returns></returns>
-        public Task<DataResponse<OrderDto>> Update(OrderDto order) => _ordersRepository.Update(order);
+        public Task<DataResponse<Guid>> Create(OrderDto orderDto) => _ordersRepository.Create(orderDto);
 
         #endregion
     }

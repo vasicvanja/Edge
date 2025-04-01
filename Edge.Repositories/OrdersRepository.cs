@@ -127,23 +127,61 @@ namespace Edge.Repositories
         /// </summary>
         /// <param name="order"></param>
         /// <returns></returns>
-        public Task<DataResponse<OrderDto>> Create(OrderDto order)
+        public async Task<DataResponse<Guid>> Create(OrderDto orderDto)
         {
-            throw new NotImplementedException();
-        }
+            var result = new DataResponse<Guid>();
 
-        #endregion
+            try
+            {
+                if (orderDto == null)
+                {
+                    result.ResponseCode = EDataResponseCode.InvalidInputParameter;
+                    result.ErrorMessage = string.Format(ResponseMessages.InvalidInputParameter, nameof(Order));
+                    return result;
+                }
 
-        #region UPDATE
+                var user = await _applicationDbContext.Users.FirstOrDefaultAsync(x => x.Id == orderDto.UserId);
 
-        /// <summary>
-        /// Update Order.
-        /// </summary>
-        /// <param name="order"></param>
-        /// <returns></returns>
-        public Task<DataResponse<OrderDto>> Update(OrderDto order)
-        {
-            throw new NotImplementedException();
+                if (user == null)
+                {
+                    result.ResponseCode = EDataResponseCode.NoDataFound;
+                    result.ErrorMessage = string.Format(ResponseMessages.NoDataFoundForKey, nameof(ApplicationUser), orderDto.UserId);
+                    return result;
+                }
+
+                var existingOrder = await _applicationDbContext.Orders.FirstOrDefaultAsync(x => x.PaymentIntentId == orderDto.PaymentIntentId);
+
+                if (existingOrder != null)
+                {
+                    result.ResponseCode = EDataResponseCode.InvalidInputParameter;
+                    result.ErrorMessage = string.Format(ResponseMessages.EntityAlreadyExists, nameof(Order), orderDto.PaymentIntentId);
+                    return result;
+                }
+
+                var order = new Order
+                {
+                    UserId = orderDto.UserId,
+                    Amount = orderDto.Amount,
+                    Status = orderDto.Status,
+                    PaymentIntentId = orderDto.PaymentIntentId,
+                    ReceiptUrl = orderDto.ReceiptUrl,
+                    Description = orderDto.Description,
+                    CreatedAt = DateTime.UtcNow,
+                    Metadata = orderDto.Metadata
+                };
+
+                result.Data = order.Id;
+                result.ResponseCode = EDataResponseCode.Success;
+                result.Succeeded = true;
+
+                return result;
+            }
+            catch (Exception)
+            {
+                result.ResponseCode = EDataResponseCode.GenericError;
+                result.ErrorMessage = string.Format(ResponseMessages.UnsuccessfulCreationOfEntity, nameof(Order));
+                return result;
+            }
         }
 
         #endregion

@@ -63,7 +63,7 @@ namespace Edge.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("{userId}/all")]
+        [Route("all/{userId}")]
         public async Task<IActionResult> GetAllByUserId(string userId)
         {
             try
