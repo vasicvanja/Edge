@@ -196,6 +196,7 @@ namespace Edge.Services
             var authClaims = new List<Claim>
             {
                 new(ClaimTypes.Name, user.UserName!),
+                new(JwtRegisteredClaimNames.Sub, user.Id),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

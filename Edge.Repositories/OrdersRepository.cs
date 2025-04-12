@@ -149,6 +149,7 @@ namespace Edge.Repositories
                     return result;
                 }
 
+                // Check if order with this PaymentIntentId already exists
                 var existingOrder = await _applicationDbContext.Orders.FirstOrDefaultAsync(x => x.PaymentIntentId == orderDto.PaymentIntentId);
 
                 if (existingOrder != null)
@@ -167,8 +168,31 @@ namespace Edge.Repositories
                     ReceiptUrl = orderDto.ReceiptUrl,
                     Description = orderDto.Description,
                     CreatedAt = DateTime.UtcNow,
-                    Metadata = orderDto.Metadata
+                    Metadata = orderDto.Metadata,
+                    OrderItems = new List<OrderItem>()
                 };
+
+                // Add order items for each artwork in the purchase
+                if (orderDto.Metadata != null && orderDto.Metadata.TryGetValue("ArtworkIds", out var artworkIds))
+                {
+                    var ids = artworkIds.Split(',').Select(int.Parse).ToList();
+                    var artworks = await _applicationDbContext.Artworks
+                        .Where(a => ids.Contains(a.Id))
+                        .ToListAsync();
+
+                    foreach (var artwork in artworks)
+                    {
+                        order.OrderItems.Add(new OrderItem
+                        {
+                            ArtworkId = artwork.Id,
+                            Price = artwork.Price,
+                            CreatedAt = DateTime.UtcNow
+                        });
+                    }
+                }
+
+                await _applicationDbContext.Orders.AddAsync(order);
+                await _applicationDbContext.SaveChangesAsync();
 
                 result.Data = order.Id;
                 result.ResponseCode = EDataResponseCode.Success;
