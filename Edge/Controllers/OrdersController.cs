@@ -1,7 +1,9 @@
 ﻿using Edge.Dtos;
 using Edge.Services.Interfaces;
+using Edge.Shared.DataContracts.Constants;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Edge.Controllers
@@ -37,6 +39,7 @@ namespace Edge.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
@@ -63,6 +66,7 @@ namespace Edge.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("all/{userId}")]
         public async Task<IActionResult> GetAllByUserId(string userId)
         {
