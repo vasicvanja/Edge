@@ -49,6 +49,7 @@ namespace Edge.Repositories
             {
                 var order = await _applicationDbContext.Orders
                     .Include(x => x.OrderItems)
+                    .ThenInclude(oi => oi.Artwork)
                     .FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (order == null)
@@ -96,6 +97,7 @@ namespace Edge.Repositories
                 var orders = await _applicationDbContext.Orders
                     .Where(x => x.UserId == userId)
                     .Include(x => x.OrderItems)
+                    .ThenInclude(oi => oi.Artwork)
                     .ToListAsync();
 
                 if (orders == null)
