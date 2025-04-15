@@ -57,6 +57,10 @@ namespace DIInstall
             // Roles
             serviceCollection.AddScoped<IRolesRepository, RolesRepository>();
             serviceCollection.AddScoped<IRolesService, RolesService>();
+
+            // Orders
+            serviceCollection.AddScoped<IOrdersRepository, OrdersRepository>();
+            serviceCollection.AddScoped<IOrdersService, OrdersService>();
         }
     }
 }

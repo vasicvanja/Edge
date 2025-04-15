@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -95,6 +97,8 @@ builder.Services.AddAuthentication(options =>
     options.IncludeErrorDetails = true;
     options.TokenValidationParameters = new TokenValidationParameters()
     {
+        NameClaimType = JwtRegisteredClaimNames.Sub,
+        RoleClaimType = ClaimTypes.Role,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTSettings:SecurityKey"] ?? string.Empty)),
         ValidIssuer = builder.Configuration["JWTSettings:ValidIssuer"],

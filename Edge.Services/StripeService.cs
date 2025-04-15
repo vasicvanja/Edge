@@ -4,10 +4,12 @@ using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Enums;
 using Edge.Shared.DataContracts.Resources;
 using Edge.Shared.DataContracts.Responses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
+using System.Security.Claims;
 
 #pragma warning disable CS8629 // Nullable value type may be null.
 #pragma warning disable CS8604 // Possible null reference argument.
@@ -24,6 +26,8 @@ namespace Edge.Services
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
         private readonly SessionLineItemService _sessionLineItemService;
+        private readonly IOrdersService _ordersService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         #endregion
 
@@ -39,12 +43,14 @@ namespace Edge.Services
         /// <param name="configuration"></param>
         /// <param name="sessionLineItemService"></param>
         public StripeService(
-            IOptions<StripeSettingsDto> stripeSettings, 
-            ApplicationDbContext applicationDbContext, 
-            IArtworksService artworksService, 
-            IEmailService emailService, 
+            IOptions<StripeSettingsDto> stripeSettings,
+            ApplicationDbContext applicationDbContext,
+            IArtworksService artworksService,
+            IEmailService emailService,
             IConfiguration configuration,
-            SessionLineItemService sessionLineItemService)
+            SessionLineItemService sessionLineItemService,
+            IOrdersService ordersService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _stripeSettings = stripeSettings.Value;
             StripeConfiguration.ApiKey = _stripeSettings.SecretKey;
@@ -53,6 +59,8 @@ namespace Edge.Services
             _emailService = emailService;
             _configuration = configuration;
             _sessionLineItemService = sessionLineItemService;
+            _ordersService = ordersService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         #endregion
@@ -98,9 +106,11 @@ namespace Edge.Services
                 }
 
                 var clientUrl = _configuration.GetValue<string>("ClientApp:Url");
+                var userId = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 var options = new SessionCreateOptions
                 {
+                    ClientReferenceId = userId,
                     PaymentMethodTypes = new List<string>
                     {
                         "card"
@@ -110,6 +120,11 @@ namespace Edge.Services
                     SuccessUrl = clientUrl + "/successful-payment",
                     CancelUrl = clientUrl + "/unsuccessful-payment"
                 };
+
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    options.ClientReferenceId = userId;
+                }
 
                 var service = new SessionService();
                 var session = await service.CreateAsync(options);
@@ -169,9 +184,35 @@ namespace Edge.Services
                     List<ArtworkDto> artworks = await GetSessionArtworks(session);
                     await _artworksService.UpdateArtworkQuantity(artworks);
 
+                    var user = session.ClientReferenceId;
+
+                    // If customer is logged in (has an account), create an order record
+                    if (!string.IsNullOrEmpty(session.ClientReferenceId))
+                    {
+                        var orderDto = new OrderDto
+                        {
+                            UserId = session.ClientReferenceId,
+                            Amount = (int)(session.AmountTotal.HasValue ? (decimal)(session.AmountTotal.Value / 100) : 0),
+                            Status = session.PaymentStatus,
+                            PaymentIntentId = session.PaymentIntentId,
+                            ReceiptUrl = session.Invoice?.InvoicePdf ?? session.CustomerDetails?.Email,
+                            Description = $"Purchase of {artworks.Count} artwork(s)",
+                            Metadata = new Dictionary<string, string>
+                            {
+                                { "ArtworkIds", string.Join(",", artworks.Select(a => a.Id)) },
+                                { "SessionId", session.Id }
+                            }
+                        };
+
+                        await _ordersService.Create(orderDto);
+                    }
+
                     // Send an email to the user with the details of the purchased artworks
-                    var userEmail = session.CustomerDetails.Email;
-                    await _emailService.SendPurchaseConfirmationEmail(userEmail, artworks);
+                    var userEmail = session.CustomerDetails?.Email;
+                    if (!string.IsNullOrEmpty(userEmail))
+                    {
+                        await _emailService.SendPurchaseConfirmationEmail(userEmail, artworks);
+                    }
 
                     result.Data = true;
                     result.Succeeded = true;
