@@ -151,6 +151,71 @@ namespace Edge.Repositories
             }
         }
 
+        /// <summary>
+        /// Get all filtered Artworks.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<DataResponse<List<ArtworkDto>>> GetFilteredArtworks(ArtworkFilterDto filter)
+        {
+            var result = new DataResponse<List<ArtworkDto>> { Data = new List<ArtworkDto>(), Succeeded = false };
+
+            try
+            {
+                var query = _applicationDbContext.Artworks.AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(filter.Technique))
+                    query = query.Where(a => a.Technique == filter.Technique);
+
+                if (filter.Type.HasValue)
+                    query = query.Where(a => a.Type == filter.Type);
+
+                if (filter.CycleId > 0)
+                    query = query.Where(a => a.CycleId == filter.CycleId);
+
+                if (filter.MinPrice > 0)
+                    query = query.Where(a => a.Price >= filter.MinPrice);
+
+                if (filter.MaxPrice > 0)
+                    query = query.Where(a => a.Price <= filter.MaxPrice);
+
+                // Optional sorting
+                if (!string.IsNullOrWhiteSpace(filter.SortBy))
+                {
+                    if (filter.SortDirection.ToLower() == "desc")
+                    {
+                        query = filter.SortBy.ToLower() switch
+                        {
+                            "price" => query.OrderByDescending(a => a.Price),
+                            _ => query
+                        };
+                    }
+                    else
+                    {
+                        query = filter.SortBy.ToLower() switch
+                        {
+                            "price" => query.OrderBy(a => a.Price),
+                            _ => query
+                        };
+                    }
+                }
+
+                var artworks = await query.ToListAsync();
+                var artworkDto = _mapper.Map<List<Artwork>, List<ArtworkDto>>(artworks);
+
+                result.ResponseCode = EDataResponseCode.Success;
+                result.Succeeded = true;
+                result.Data = artworkDto;
+                return result;
+            }
+            catch (Exception)
+            {
+                result.Data = null;
+                result.ResponseCode = EDataResponseCode.GenericError;
+                result.ErrorMessage = string.Format(ResponseMessages.GettingEntitiesFailed, nameof(Artwork));
+                return result;
+            }
+        }
+
         #endregion
 
         #region CREATE
