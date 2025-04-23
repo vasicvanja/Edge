@@ -112,6 +112,33 @@ namespace Edge.Controllers
             }
         }
 
+        /// <summary>
+        /// Get all filtered Artworks.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("filter")]
+        public async Task<IActionResult> GetFilteredArtworks([FromBody] ArtworkFilterDto filter)
+        {
+            try
+            {
+                var filterdArtworks = await _artworkService.GetFilteredArtworks(filter);
+                return Ok(Conversion<List<ArtworkDto>>.ReturnResponse(filterdArtworks));
+            }
+            catch (Exception ex)
+            {
+                var errRet = new DataResponse<List<ArtworkDto>>
+                {
+                    Data = null,
+                    ResponseCode = EDataResponseCode.GenericError,
+                    Succeeded = false,
+                    ErrorMessage = ex.Message
+                };
+                return BadRequest(Conversion<List<ArtworkDto>>.ReturnResponse(errRet));
+            }
+        }
+
         #endregion
 
         #region CREATE

@@ -48,6 +48,12 @@ namespace Edge.Services
         public async Task<DataResponse<List<ArtworkDto>>> GetAllUnassociatedArtworks() => await _artworkRepository.GetAllUnassociatedArtworks();
 
         /// <summary>
+        /// Get all filtered Artworks.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<DataResponse<List<ArtworkDto>>> GetFilteredArtworks(ArtworkFilterDto filter) => await _artworkRepository.GetFilteredArtworks(filter);
+
+        /// <summary>
         /// Create an Artwork.
         /// </summary>
         /// <param name="artworkDto"></param>
