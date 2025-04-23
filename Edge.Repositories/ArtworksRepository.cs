@@ -163,9 +163,6 @@ namespace Edge.Repositories
             {
                 var query = _applicationDbContext.Artworks.AsQueryable();
 
-                if (!string.IsNullOrWhiteSpace(filter.Technique))
-                    query = query.Where(a => a.Technique == filter.Technique);
-
                 if (filter.Type.HasValue)
                     query = query.Where(a => a.Type == filter.Type);
 
