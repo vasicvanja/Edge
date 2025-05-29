@@ -93,7 +93,7 @@ namespace Edge.Services
                     {
                         PriceData = new SessionLineItemPriceDataOptions
                         {
-                            Currency = "usd",
+                            Currency = "mkd",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 //TODO: Pass both the Artwork's Name and Id
@@ -121,10 +121,6 @@ namespace Edge.Services
                     CancelUrl = clientUrl + "/unsuccessful-payment"
                 };
 
-                if (!string.IsNullOrEmpty(userId))
-                {
-                    options.ClientReferenceId = userId;
-                }
 
                 var service = new SessionService();
                 var session = await service.CreateAsync(options);
@@ -189,6 +185,9 @@ namespace Edge.Services
                     // If customer is logged in (has an account), create an order record
                     if (!string.IsNullOrEmpty(session.ClientReferenceId))
                     {
+                        var totalQuantity = artworks.Sum(a => a.Quantity);
+                        var breakdown = string.Join(", ", artworks.Select(a => $"{a.Quantity}x {a.Name}"));
+
                         var orderDto = new OrderDto
                         {
                             UserId = session.ClientReferenceId,
@@ -196,7 +195,7 @@ namespace Edge.Services
                             Status = session.PaymentStatus,
                             PaymentIntentId = session.PaymentIntentId,
                             ReceiptUrl = session.Invoice?.InvoicePdf ?? session.CustomerDetails?.Email,
-                            Description = $"Purchase of {artworks.Count} artwork(s)",
+                            Description = $"Purchase of {totalQuantity} artwork(s): {breakdown}",
                             Metadata = new Dictionary<string, string>
                             {
                                 { "ArtworkIds", string.Join(",", artworks.Select(a => a.Id)) },

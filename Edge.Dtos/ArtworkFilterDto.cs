@@ -4,7 +4,6 @@ namespace Edge.Dtos
 {
     public class ArtworkFilterDto
     {
-        public string Technique { get; set; }
         public EArtworkType? Type { get; set; }
         public int CycleId { get; set; }
         public decimal? MinPrice { get; set; }
