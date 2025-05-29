@@ -121,10 +121,6 @@ namespace Edge.Services
                     CancelUrl = clientUrl + "/unsuccessful-payment"
                 };
 
-                if (!string.IsNullOrEmpty(userId))
-                {
-                    options.ClientReferenceId = userId;
-                }
 
                 var service = new SessionService();
                 var session = await service.CreateAsync(options);
