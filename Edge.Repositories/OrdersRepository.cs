@@ -174,6 +174,7 @@ namespace Edge.Repositories
                     PaymentIntentId = orderDto.PaymentIntentId,
                     ReceiptUrl = orderDto.ReceiptUrl,
                     Description = orderDto.Description,
+                    BillingAddress = orderDto.BillingAddress,
                     CreatedAt = DateTime.UtcNow,
                     Metadata = orderDto.Metadata,
                     OrderItems = new List<OrderItem>()
