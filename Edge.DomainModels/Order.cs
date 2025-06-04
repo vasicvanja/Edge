@@ -15,6 +15,7 @@ namespace Edge.DomainModels
         public string PaymentIntentId { get; set; }
         public string ReceiptUrl { get; set; }
         public string Description { get; set; }
+        public string BillingAddress { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [Column(TypeName = "nvarchar(max)")]

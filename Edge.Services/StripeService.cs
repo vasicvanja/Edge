@@ -117,10 +117,10 @@ namespace Edge.Services
                     },
                     LineItems = lineItems,
                     Mode = "payment",
+                    BillingAddressCollection = "required",
                     SuccessUrl = clientUrl + "/successful-payment",
                     CancelUrl = clientUrl + "/unsuccessful-payment"
                 };
-
 
                 var service = new SessionService();
                 var session = await service.CreateAsync(options);
@@ -188,6 +188,17 @@ namespace Edge.Services
                         var totalQuantity = artworks.Sum(a => a.Quantity);
                         var breakdown = string.Join(", ", artworks.Select(a => $"{a.Quantity}x {a.Name}"));
 
+                        var addressParts = new[]
+                        {
+                            session.CustomerDetails?.Address.Line1,
+                            session.CustomerDetails?.Address.Line2,
+                            session.CustomerDetails?.Address.City,
+                            session.CustomerDetails?.Address.State,
+                            session.CustomerDetails?.Address.PostalCode,
+                            session.CustomerDetails?.Address.Country
+                        };
+                        var formattedAddress = string.Join(" ", addressParts.Where(p => !string.IsNullOrWhiteSpace(p)));
+
                         var orderDto = new OrderDto
                         {
                             UserId = session.ClientReferenceId,
@@ -196,6 +207,7 @@ namespace Edge.Services
                             PaymentIntentId = session.PaymentIntentId,
                             ReceiptUrl = session.Invoice?.InvoicePdf ?? session.CustomerDetails?.Email,
                             Description = $"Purchase of {totalQuantity} artwork(s): {breakdown}",
+                            BillingAddress = formattedAddress,
                             Metadata = new Dictionary<string, string>
                             {
                                 { "ArtworkIds", string.Join(",", artworks.Select(a => a.Id)) },
