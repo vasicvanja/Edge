@@ -72,7 +72,7 @@ namespace Edge.Services
         public async Task<IdentityResult> Register(RegisterDto registerDto)
         {
             // Check if the username is already used
-            var userNameUsed = await _userManager.Users.AnyAsync(x=> x.NormalizedUserName == registerDto.Username.ToUpperInvariant());
+            var userNameUsed = await _userManager.Users.AnyAsync(x => x.NormalizedUserName == registerDto.Username.ToUpperInvariant());
             if (userNameUsed)
             {
                 throw new DuplicateNameException(string.Format(ResponseMessages.UsernameAlreadyTaken, registerDto.Username));
@@ -103,6 +103,8 @@ namespace Edge.Services
             {
                 Email = registerDto.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
                 UserName = registerDto.Username,
                 PhoneNumber = registerDto.PhoneNumber,
                 Enabled = true,

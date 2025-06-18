@@ -73,6 +73,8 @@ namespace Edge.Repositories
                 var userDto = new UserDto
                 {
                     Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
                     UserName = user.UserName,
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
@@ -129,6 +131,8 @@ namespace Edge.Repositories
                     userDtos.Add(new UserDto
                     {
                         Id = user.Id,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
                         UserName = user.UserName,
                         Email = user.Email,
                         PhoneNumber = user.PhoneNumber,
@@ -186,7 +190,7 @@ namespace Edge.Repositories
                 if (userNameUsed)
                 {
                     result.ResponseCode = EDataResponseCode.InvalidInputParameter;
-                    result.ErrorMessage = string.Format(ResponseMessages.UsernameAlreadyTaken, userNameUsed);
+                    result.ErrorMessage = string.Format(ResponseMessages.UsernameAlreadyTaken, user.UserName);
                     return result;
                 }
 
@@ -226,6 +230,8 @@ namespace Edge.Repositories
                 //Map CreateUserDto to IdentityUser
                 var identityUser = new ApplicationUser
                 {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
                     UserName = user.UserName,
                     Email = user.Email,
                     NormalizedUserName = user.UserName.ToUpperInvariant(),
@@ -384,6 +390,8 @@ namespace Edge.Repositories
                 }
 
                 user.Enabled = userDto.Enabled;
+                user.FirstName = userDto.FirstName;
+                user.LastName = userDto.LastName;
 
                 var currentUser = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
                 user.DateModified = DateTime.UtcNow;
