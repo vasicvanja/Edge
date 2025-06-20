@@ -142,7 +142,7 @@ namespace Edge.Services
                         }
                         mailMessage.Body = emailBody.ToString();
 
-                        smtpClient.Send(mailMessage);
+                        await smtpClient.SendMailAsync(mailMessage);
                     }
                 }
 

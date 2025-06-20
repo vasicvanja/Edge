@@ -156,7 +156,12 @@ namespace Edge.Services
         /// <exception cref="AuthenticationException"></exception>
         public async Task<string> Login(LoginDto loginDto)
         {
-            var user = await _userManager.FindByNameAsync(loginDto.Username) ?? throw new InvalidOperationException(ResponseMessages.UserDoesNotExist);
+            var user = await _userManager.FindByNameAsync(loginDto.Username);
+
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(loginDto.Username);
+            }
 
             if (user == null)
             {

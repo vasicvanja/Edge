@@ -66,7 +66,7 @@ namespace Edge.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = UserRoles.Admin)]
+        [Authorize(Roles = UserRoles.Admin + ", " + UserRoles.User)]
         [Route("all/{userId}")]
         public async Task<IActionResult> GetAllByUserId(string userId)
         {
