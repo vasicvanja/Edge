@@ -255,6 +255,8 @@ namespace Edge.Repositories
                     Name = artworkDto.Name,
                     Description = artworkDto.Description,
                     Technique = artworkDto.Technique,
+                    Height = artworkDto.Height,
+                    Width = artworkDto.Width,
                     Price = artworkDto.Price,
                     Quantity = artworkDto.Quantity,
                     Type = artworkDto.Type,
