@@ -175,6 +175,12 @@ namespace Edge.Repositories
                 if (filter.MaxPrice > 0)
                     query = query.Where(a => a.Price <= filter.MaxPrice);
 
+                if (filter.Width > 0)
+                    query = query.Where(a => a.Width >= filter.Width);
+
+                if (filter.Height > 0)
+                    query = query.Where(a => a.Height >= filter.Height);
+
                 // Optional sorting
                 if (!string.IsNullOrWhiteSpace(filter.SortBy))
                 {
@@ -255,8 +261,8 @@ namespace Edge.Repositories
                     Name = artworkDto.Name,
                     Description = artworkDto.Description,
                     Technique = artworkDto.Technique,
-                    Height = artworkDto.Height,
                     Width = artworkDto.Width,
+                    Height = artworkDto.Height,
                     Price = artworkDto.Price,
                     Quantity = artworkDto.Quantity,
                     Type = artworkDto.Type,
