@@ -188,11 +188,11 @@ namespace Edge.Repositories
         /// </summary>
         /// <param name="createCycleDto"></param>
         /// <returns></returns>
-        public async Task<DataResponse<bool>> Update(CreateCycleDto createCycleDto)
+        public async Task<DataResponse<bool>> Update(CreateCycleDto updateCycleDto)
         {
             var result = new DataResponse<bool>() { Data = false, Succeeded = false };
 
-            if (createCycleDto == null)
+            if (updateCycleDto == null)
             {
                 result.ResponseCode = EDataResponseCode.InvalidInputParameter;
                 result.ErrorMessage = string.Format(ResponseMessages.InvalidInputParameter, nameof(Cycle));
@@ -202,26 +202,33 @@ namespace Edge.Repositories
 
             try
             {
-                var existingCycle = await _applicationDbContext.Cycles.FirstOrDefaultAsync(x => x.Id == createCycleDto.Id);
+                var existingCycle = await _applicationDbContext.Cycles.FirstOrDefaultAsync(x => x.Id == updateCycleDto.Id);
 
                 if (existingCycle == null)
                 {
                     result.ResponseCode = EDataResponseCode.NoDataFound;
-                    result.ErrorMessage = string.Format(ResponseMessages.NoDataFoundForKey, nameof(Cycle), createCycleDto.Id);
+                    result.ErrorMessage = string.Format(ResponseMessages.NoDataFoundForKey, nameof(Cycle), updateCycleDto.Id);
 
                     return result;
                 }
 
                 var user = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
-                createCycleDto.ModifiedBy = user;
-                createCycleDto.DateModified = DateTime.UtcNow;
+                updateCycleDto.ModifiedBy = user;
+                updateCycleDto.DateModified = DateTime.UtcNow;
 
-                _mapper.Map(createCycleDto, existingCycle);
+                _mapper.Map(updateCycleDto, existingCycle);
 
-                var artworks = await _applicationDbContext.Artworks
-                        .Where(a => createCycleDto.ArtworkIds.Contains(a.Id))
+                if (updateCycleDto.ArtworkIds.Any())
+                {
+                    var artworksToUpdate = await _applicationDbContext.Artworks
+                        .Where(a => updateCycleDto.ArtworkIds.Contains(a.Id))
                         .ToListAsync();
-                existingCycle.Artworks = artworks;
+
+                    foreach (var artwork in artworksToUpdate )
+                    {
+                        artwork.CycleId = updateCycleDto.Id;
+                    }
+                }
 
                 await _applicationDbContext.SaveChangesAsync();
 

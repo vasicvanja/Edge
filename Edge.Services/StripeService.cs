@@ -93,7 +93,7 @@ namespace Edge.Services
                     {
                         PriceData = new SessionLineItemPriceDataOptions
                         {
-                            Currency = "mkd",
+                            Currency = "usd",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 //TODO: Pass both the Artwork's Name and Id
