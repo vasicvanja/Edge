@@ -19,5 +19,12 @@ namespace Edge.Services.Interfaces
         /// <param name="signature"></param>
         /// <returns></returns>
         Task<DataResponse<bool>> Webhook(Stream body, string signature);
+
+        /// <summary>
+        /// Return all artworks that were a part of a successful payment.
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
+        Task<DataResponse<List<ArtworkDto>>> GetSessionArtworks(string session);
     }
 }

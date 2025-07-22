@@ -90,5 +90,31 @@ namespace Edge.Controllers
         }
 
         #endregion
+
+        #region GET SESSION ARTWORKS
+
+        [HttpGet]
+        [Route("getSessionArtworks/{sessionId}")]
+        public async Task<IActionResult> GetSessionArtworks(string sessionId)
+        {
+            try
+            {
+                var result = await _stripeService.GetSessionArtworks(sessionId);
+                return Ok(Conversion<List<ArtworkDto>>.ReturnResponse(result));
+            }
+            catch (Exception ex)
+            {
+                var errRet = new DataResponse<List<ArtworkDto>>
+                {
+                    Data = null,
+                    ResponseCode = EDataResponseCode.GenericError,
+                    Succeeded = false,
+                    ErrorMessage = ex.Message
+                };
+                return BadRequest(Conversion<List<ArtworkDto>>.ReturnResponse(errRet));
+            }
+        }
+
+        #endregion
     }
 }
