@@ -1,4 +1,5 @@
 ﻿using Edge.Data.EF;
+using Edge.DomainModels;
 using Edge.Dtos;
 using Edge.Services.Interfaces;
 using Edge.Shared.DataContracts.Enums;
@@ -93,7 +94,7 @@ namespace Edge.Services
                     {
                         PriceData = new SessionLineItemPriceDataOptions
                         {
-                            Currency = "mkd",
+                            Currency = "usd",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 //TODO: Pass both the Artwork's Name and Id
@@ -118,7 +119,7 @@ namespace Edge.Services
                     LineItems = lineItems,
                     Mode = "payment",
                     BillingAddressCollection = "required",
-                    SuccessUrl = clientUrl + "/successful-payment",
+                    SuccessUrl = clientUrl + "/successful-payment?sessionId={CHECKOUT_SESSION_ID}",
                     CancelUrl = clientUrl + "/unsuccessful-payment"
                 };
 
@@ -177,16 +178,16 @@ namespace Edge.Services
                 if (stripeEvent.Type == EventTypes.CheckoutSessionCompleted)
                 {
                     var session = stripeEvent.Data.Object as Session;
-                    List<ArtworkDto> artworks = await GetSessionArtworks(session);
-                    await _artworksService.UpdateArtworkQuantity(artworks);
+                    var artworks = await GetSessionArtworks(session.Id);
+                    await _artworksService.UpdateArtworkQuantity(artworks.Data);
 
                     var user = session.ClientReferenceId;
 
                     // If customer is logged in (has an account), create an order record
                     if (!string.IsNullOrEmpty(session.ClientReferenceId))
                     {
-                        var totalQuantity = artworks.Sum(a => a.Quantity);
-                        var breakdown = string.Join(", ", artworks.Select(a => $"{a.Quantity}x {a.Name}"));
+                        var totalQuantity = artworks.Data.Sum(a => a.Quantity);
+                        var breakdown = string.Join(", ", artworks.Data.Select(a => $"{a.Quantity}x {a.Name}"));
 
                         var addressParts = new[]
                         {
@@ -210,7 +211,7 @@ namespace Edge.Services
                             BillingAddress = formattedAddress,
                             Metadata = new Dictionary<string, string>
                             {
-                                { "ArtworkIds", string.Join(",", artworks.Select(a => a.Id)) },
+                                { "ArtworkIds", string.Join(",", artworks.Data.Select(a => a.Id)) },
                                 { "SessionId", session.Id }
                             }
                         };
@@ -222,7 +223,7 @@ namespace Edge.Services
                     var userEmail = session.CustomerDetails?.Email;
                     if (!string.IsNullOrEmpty(userEmail))
                     {
-                        await _emailService.SendPurchaseConfirmationEmail(userEmail, artworks);
+                        await _emailService.SendPurchaseConfirmationEmail(userEmail, artworks.Data);
                     }
 
                     result.Data = true;
@@ -248,21 +249,37 @@ namespace Edge.Services
 
         #endregion
 
-        #region Private Methods
+        #region GET SESSION ARTWORKS
 
         /// <summary>
         /// Return all artworks that were a part of a successful payment.
         /// </summary>
         /// <param name="session"></param>
         /// <returns></returns>
-        private async Task<List<ArtworkDto>> GetSessionArtworks(Session session)
+        public async Task<DataResponse<List<ArtworkDto>>> GetSessionArtworks(string sessionId)
         {
-            var artworkDtos = new List<ArtworkDto>();
-
-            var lineItems = await _sessionLineItemService.ListAsync(session.Id);
+            var result = new DataResponse<List<ArtworkDto>> { Data = new List<ArtworkDto>(), Succeeded = false };
 
             try
             {
+                if (sessionId == null)
+                {
+                    result.ResponseCode = EDataResponseCode.InvalidInputParameter;
+                    result.ErrorMessage = ResponseMessages.InvalidInputParameter;
+
+                    return result;
+                }
+
+                var lineItems = await _sessionLineItemService.ListAsync(sessionId);
+
+                if (lineItems == null)
+                {
+                    result.ResponseCode = EDataResponseCode.NoDataFound;
+                    result.ErrorMessage = ResponseMessages.NoDataFound;
+
+                    return result;
+                }
+
                 foreach (var lineItem in lineItems.Data)
                 {
                     var artworkId = lineItem.Description;
@@ -275,18 +292,27 @@ namespace Edge.Services
                             Id = artwork.Id,
                             Name = artwork.Name,
                             Price = artwork.Price,
-                            Quantity = (int)lineItem.Quantity
+                            Quantity = (int)lineItem.Quantity,
+                            Description = artwork.Description,
+                            ImageData = artwork.ImageData
                         };
 
-                        artworkDtos.Add(artworkDto);
+                        result.Data.Add(artworkDto);
                     }
                 }
 
-                return artworkDtos;
+                result.ResponseCode = EDataResponseCode.Success;
+                result.Succeeded = true;
+
+                return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new Exception(ex.Message);
+                result.Data = null;
+                result.ResponseCode = EDataResponseCode.GenericError;
+                result.ErrorMessage = string.Format(ResponseMessages.GettingEntitiesFailed, nameof(Cycle));
+
+                return result;
             }
         }
 

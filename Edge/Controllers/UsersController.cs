@@ -40,7 +40,7 @@ namespace Edge.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRoles.Admin + ", " + UserRoles.User)]
         [Route("{id}")]
         public async Task<IActionResult> Get(string id)
         {
