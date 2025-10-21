@@ -85,7 +85,9 @@ namespace Edge.Repositories
 
             try
             {
-                var artworks = await _applicationDbContext.Artworks.ToListAsync();
+                var artworks = await _applicationDbContext.Artworks
+                    .OrderByDescending(x => x.DateModified)
+                    .ToListAsync();
 
                 if (artworks == null)
                 {

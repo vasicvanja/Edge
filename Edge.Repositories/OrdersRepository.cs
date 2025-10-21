@@ -98,6 +98,7 @@ namespace Edge.Repositories
                     .Where(x => x.UserId == userId)
                     .Include(x => x.OrderItems)
                     .ThenInclude(oi => oi.Artwork)
+                    .OrderByDescending(x => x.CreatedAt)
                     .ToListAsync();
 
                 if (orders == null)

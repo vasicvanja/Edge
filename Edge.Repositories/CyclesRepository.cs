@@ -87,7 +87,9 @@ namespace Edge.Repositories
 
             try
             {
-                var cycles = await _applicationDbContext.Cycles.ToListAsync();
+                var cycles = await _applicationDbContext.Cycles
+                    .OrderByDescending(x => x.DateModified)
+                    .ToListAsync();
 
                 if (cycles == null)
                 {
