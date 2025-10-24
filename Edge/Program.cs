@@ -14,7 +14,6 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -24,8 +23,6 @@ builder.Services.AddControllers()
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.InstallAppDependencies();
-
-builder.Services.AddControllers();
 
 builder.Services.Configure<StripeSettingsDto>(builder.Configuration.GetSection("StripeSettings"));
 
@@ -109,7 +106,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-//builder.Services.AddDbContext
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
